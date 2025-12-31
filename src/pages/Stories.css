@@ -1,0 +1,56 @@
+.stories-container {
+  max-width: 700px;
+  margin: 2rem auto;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.stories-container h2 {
+  text-align: center;
+  color: #2563eb;
+  margin-bottom: 1.5rem;
+}
+
+.timeline-entry {
+  display: grid;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.timeline-entry input {
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.95rem;
+}
+
+.add-btn,
+.remove-btn,
+.submit-btn {
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.add-btn {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.remove-btn {
+  background-color: #ef4444;
+  color: white;
+  width: fit-content;
+}
+
+.submit-btn {
+  background-color: #2563eb;
+  color: white;
+  width: 100%;
+  margin-top: 1rem;
+}

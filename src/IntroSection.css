@@ -1,0 +1,100 @@
+
+/* PAGE CONTAINER */
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* BOXES */
+.box {
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+    border: "1px solid red"
+}
+
+/* INTRO */
+.intro h1 {
+    display: flex;
+    font-size: 60px;
+    line-height: 1.6;
+    font-weight: 600;
+    width: 100%;
+}
+
+.intro p {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    line-height: 1.6;
+    width: 100%;
+}
+
+
+/* STATS */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    text-align: center;
+}
+
+.stat {
+    background: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+
+}
+
+.stat h3 {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+
+}
+
+.stat p {
+    font-size: 26px;
+    font-weight: 700;
+}
+
+/* CTA */
+.cta {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.btn {
+    padding: 14px 24px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.primary {
+    background: #0077ff;
+    color: white;
+}
+
+.delete {
+    background: #eaeaea;
+    color: #b21a1a;
+}
+
+.secondary {
+    background: #eaeaea;
+    color: #333;
+}
+
+.primary:hover {
+    background: #005fd1;
+}
+
+.secondary:hover {
+    background: #dcdcdc;
+}
+
+

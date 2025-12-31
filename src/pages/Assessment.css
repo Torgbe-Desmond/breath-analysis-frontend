@@ -1,0 +1,118 @@
+/* ================= ASSESSMENT CONTAINER ================= */
+.assessment-container {
+    max-width: 720px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+
+.assessment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+}
+
+/* ================= HEADINGS ================= */
+.assessment-title {
+    font-size: 1.8rem;
+    color: #1d4ed8;
+    margin-bottom: 1rem;
+}
+
+/* ================= BUTTONS ================= */
+.assessment-btn {
+    padding: 0.65rem 1.2rem;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.assessment-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
+}
+
+/* ================= QUESTION BLOCK ================= */
+.assessment-question {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #f9fafb;
+}
+
+.assessment-question label strong {
+    font-size: 1rem;
+    color: #0f172a;
+}
+
+/* ================= INPUT BLOCK ================= */
+.assessment-input-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* ================= TEXTAREA & SELECT ================= */
+.assessment-input-block textarea,
+.assessment-input-block select {
+    padding: 0.65rem 0.85rem;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 0.95rem;
+    background: white;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.assessment-input-block textarea:focus,
+.assessment-input-block select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* ================= RADIO & CHECKBOX ================= */
+.assessment-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    color: #0f172a;
+}
+
+.assessment-option input[type="radio"],
+.assessment-option input[type="checkbox"] {
+    accent-color: #2563eb;
+    margin: 0;
+}
+
+/* ================= MOBILE RESPONSIVE ================= */
+@media (max-width: 640px) {
+    .assessment-container {
+        padding: 1.25rem;
+        margin: 1rem;
+    }
+
+    .assessment-question {
+        padding: 0.85rem;
+    }
+
+    .assessment-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
