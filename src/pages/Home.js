@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import "../App.css";
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -13,6 +13,22 @@ export default function Home() {
           patterns, symptoms, and possible causes beyond oral hygiene.
         </p>
       </section>
+
+      {/* <section className="analytics">
+        <div className="box analytics-item">
+          <Typography
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+            }}
+          >
+            20 Reponses
+          </Typography>
+        </div>
+
+      </section> */}
 
       <section className="action-buttons">
         <Button

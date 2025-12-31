@@ -1,25 +1,32 @@
 import { useEffect, useState } from "react";
 import "./Assessment.css";
 import { handleGetQuestions } from "../Services/Contribute";
-import { CreateResponse } from "../Services/Assessment";
-import { Button } from "@mui/material";
+import {
+  CreateResponse,
+  GetResponseByEmail,
+  UpdateResponse,
+} from "../Services/Assessment";
 import AlertInfo from "../AlertInfo";
+import { IconButton } from "@mui/material";
+import ClearIcon from "@mui/icons-material/Clear";
 
 export default function Assessment() {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [totalQuestions, setTotalQuestions] = useState(0);
   const [email, setEmail] = useState("");
+  const [existingResponseId, setExistingResponseId] = useState(null);
+
   const [loading, setLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [isError, setIsError] = useState(false);
+
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
     severity: "success",
   });
+
+  /* ================= ALERTS ================= */
 
   const showSuccess = (message) => {
     setSnackbar({ open: true, message, severity: "success" });
@@ -35,25 +42,60 @@ export default function Assessment() {
 
   /* ================= LOAD QUESTIONS ================= */
 
-  useEffect(() => {
-    async function fetchQuestions() {
-      try {
-        setLoading(true);
-        const response = await handleGetQuestions();
-        if (response.data) {
-          setQuestions(response.data);
-        }
-      } catch (err) {
-        setLoading(false);
-        setIsError(true);
-        showError("Server error. Please try again later.");
-        console.error(err);
-      } finally {
-        setLoading(false);
+  async function fetchQuestions() {
+    try {
+      setLoading(true);
+      const response = await handleGetQuestions();
+      if (response?.data) {
+        setQuestions(response.data);
       }
+    } catch (err) {
+      console.error(err);
+      setIsError(true);
+      showError("Failed to load questions");
+    } finally {
+      setLoading(false);
     }
+  }
+
+  useEffect(() => {
     fetchQuestions();
   }, []);
+
+  /* ================= FETCH OLD RESPONSE BY EMAIL ================= */
+
+  useEffect(() => {
+    if (!email) return;
+
+    console.log(email);
+
+    const delay = setTimeout(async () => {
+      try {
+        const res = await GetResponseByEmail(email);
+        console.log("byEmail", res);
+
+        if (res?.data) {
+          const { _id, answers } = res.data;
+
+          setExistingResponseId(_id);
+
+          // Convert answers array → object map
+          const mappedAnswers = {};
+          answers.forEach((a) => {
+            mappedAnswers[a.questionId] = a.value;
+          });
+
+          setAnswers(mappedAnswers);
+        }
+      } catch (err) {
+        // no existing response is OK
+        setExistingResponseId(null);
+        setAnswers({});
+      }
+    }, 600); // debounce email input
+
+    return () => clearTimeout(delay);
+  }, [email]);
 
   /* ================= HANDLE INPUT ================= */
 
@@ -79,6 +121,11 @@ export default function Assessment() {
   /* ================= SUBMIT ================= */
 
   const handleSubmit = async () => {
+    if (!email) {
+      showError("Email is required");
+      return;
+    }
+
     const formattedAnswers = questions
       .map((q) => {
         const value = answers[q._id];
@@ -93,35 +140,41 @@ export default function Assessment() {
       .filter(Boolean);
 
     if (formattedAnswers.length === 0) {
-      showError("Please answer at least one question.");
+      showError("Please answer at least one question");
       return;
     }
 
     try {
       setLoadingSubmit(true);
-      const response = await CreateResponse(formattedAnswers, email);
-      if (response.data) {
-        showSuccess("Assessment submitted successfully!");
-        window.location.reload(); // fixed
+
+      if (existingResponseId) {
+        await UpdateResponse(existingResponseId, formattedAnswers);
+        showSuccess("Response updated successfully");
       } else {
-        showError("Submission failed. Please try again.");
+        await CreateResponse(formattedAnswers, email);
+        showSuccess("Response submitted successfully");
       }
+
+      window.location.reload();
     } catch (err) {
-      console.error("Submit error:", err);
-      showError("Server error. Please try again later.");
+      console.error(err);
+      showError("Submission failed");
     } finally {
-      setLoadingSubmit(true);
+      setLoadingSubmit(false);
     }
   };
 
   /* ================= RENDER INPUT ================= */
 
   const renderInput = (q) => {
+    const value = answers[q._id];
+
     switch (q.type) {
       case "textarea":
         return (
           <textarea
             rows={3}
+            value={value || ""}
             onChange={(e) => handleChange(q._id, e.target.value, "textarea")}
           />
         );
@@ -132,10 +185,8 @@ export default function Assessment() {
             <input
               type="radio"
               name={q._id}
-              value={opt}
-              onChange={(e) =>
-                handleChange(q._id, opt, "radio", e.target.checked)
-              }
+              checked={value === opt}
+              onChange={() => handleChange(q._id, opt, "radio")}
             />
             {opt}
           </label>
@@ -146,7 +197,7 @@ export default function Assessment() {
           <label key={opt}>
             <input
               type="checkbox"
-              value={opt}
+              checked={Array.isArray(value) && value.includes(opt)}
               onChange={(e) =>
                 handleChange(q._id, opt, "checkbox", e.target.checked)
               }
@@ -158,7 +209,7 @@ export default function Assessment() {
       case "dropdown":
         return (
           <select
-            defaultValue=""
+            value={value || ""}
             onChange={(e) => handleChange(q._id, e.target.value, "dropdown")}
           >
             <option value="">Select</option>
@@ -181,50 +232,56 @@ export default function Assessment() {
     <div className="assessment-container">
       <h3 className="assessment-title">Assessment</h3>
 
-      {loading && <p style={{ textAlign: "center" }}>Loading assessments...</p>}
+      <p>
+        Enter your email to continue a previous assessment or submit a new one.
+      </p>
 
-      {questions.length > 0 ? (
-        <>
-          <p>
-            We will send you a message when there are new questions to ask. You
-            can access your response using your email
-          </p>{" "}
-          <input
-            name="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Add your email here"
-          />
-          <form className="assessment-form">
-            {questions?.map((q) => (
-              <div key={q._id} className="assessment-question">
-                <label>
-                  <strong>{q.label}</strong>
-                </label>
+      <div style={{ display: "flex", gap: "1.5rem" }}>
+        <input
+          type="email"
+          value={email}
+          placeholder="Enter your email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-                <div className="assessment-input-block">{renderInput(q)} </div>
-              </div>
-            ))}
-          </form>
-          {questions.length > 0 && (
-            <div>
-              <button
-                type="button"
-                className="assessment-btn"
-                onClick={handleSubmit}
-              >
-               {loadingSubmit ? "Submitting": "Submit"}
-              </button>
-            </div>
-          )}
-        </>
-      ) : (
-        isError && (
-          <div>
-            <Button>Reload</Button>
+        {
+          <IconButton
+            onClick={() => {
+              setEmail("");
+              setAnswers({});
+            }}
+          >
+            <ClearIcon />
+          </IconButton>
+        }
+      </div>
+
+      {loading && <p>Loading questions...</p>}
+
+      <form className="assessment-form">
+        {questions.map((q) => (
+          <div key={q._id} className="assessment-question">
+            <label>
+              <strong>{q.label}</strong>
+            </label>
+            <div className="assessment-input-block">{renderInput(q)}</div>
           </div>
-        )
-      )}
+        ))}
+      </form>
+
+      <button
+        type="button"
+        className="assessment-btn"
+        onClick={handleSubmit}
+        disabled={loadingSubmit}
+      >
+        {loadingSubmit
+          ? "Submitting..."
+          : existingResponseId
+          ? "Update Response"
+          : "Submit Response"}
+      </button>
+
       <AlertInfo
         open={snackbar.open}
         message={snackbar.message}

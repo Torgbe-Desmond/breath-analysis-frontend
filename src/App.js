@@ -21,9 +21,9 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/explore" element={<ExploreLayout />} />
           <Route path="/about" element={<About />} />
-          <Route path="/contribute" element={<ContributeLayout />} />
+          {/* <Route path="/contribute" element={<ContributeLayout />} /> */}
           <Route path="/assessment" element={<Assessment />} />
-          <Route path="/contact" element={<Contact />} />
+          {/* <Route path="/feedback" element={<Contact />} /> */}
           <Route path="/response/:responseId" element={<SingleResponse />} />
         </Routes>
       </main> 

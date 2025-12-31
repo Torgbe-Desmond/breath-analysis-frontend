@@ -75,10 +75,9 @@ export default function Questions({ categories, questions, setQuestions }) {
   const filteredQuestions = questions.filter((q) => {
     const matchesType = filterType ? q.type === filterType : true;
     const matchesSearch = search
-      ? q.label.toLowerCase().includes(search.toLowerCase())
+      ? q?.label?.toLowerCase().includes(search?.toLowerCase())
       : true;
 
-    console.log(matchesType, matchesSearch);
     return matchesType && matchesSearch;
   });
 

@@ -20,9 +20,6 @@ function Contact() {
       return;
     }
 
-    // later you can POST this to backend
-    console.log("Feedback:", feedback);
-
     setFeedback("");
     setSuccessOpen(true);
   };
