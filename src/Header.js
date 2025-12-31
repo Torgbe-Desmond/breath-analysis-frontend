@@ -23,8 +23,8 @@ export default function Header() {
         <NavLink to="/about" onClick={() => setIsMobileMenuOpen(false)}>
           About
         </NavLink>
-        {/* <NavLink to="/contribute" onClick={() => setIsMobileMenuOpen(false)}>
-          Contribute
+        {/* <NavLink to="/contact" onClick={() => setIsMobileMenuOpen(false)}>
+          feedback
         </NavLink> */}
         <NavLink to="/assessment" onClick={() => setIsMobileMenuOpen(false)}>
           Assessment

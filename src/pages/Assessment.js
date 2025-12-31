@@ -14,6 +14,7 @@ export default function Assessment() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -97,6 +98,7 @@ export default function Assessment() {
     }
 
     try {
+      setLoadingSubmit(true);
       const response = await CreateResponse(formattedAnswers, email);
       if (response.data) {
         showSuccess("Assessment submitted successfully!");
@@ -107,6 +109,8 @@ export default function Assessment() {
     } catch (err) {
       console.error("Submit error:", err);
       showError("Server error. Please try again later.");
+    } finally {
+      setLoadingSubmit(true);
     }
   };
 
@@ -209,7 +213,7 @@ export default function Assessment() {
                 className="assessment-btn"
                 onClick={handleSubmit}
               >
-                Submit
+               {loadingSubmit ? "Submitting": "Submit"}
               </button>
             </div>
           )}

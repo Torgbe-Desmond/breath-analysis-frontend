@@ -18,8 +18,8 @@ export default function ContributeLayout() {
   useEffect(() => {
     async function fetchQuestions() {
       try {
-        const data = await handleGetQuestions();
-        setQuestions(data);
+        const response = await handleGetQuestions();
+        setQuestions(response.data);
       } catch (err) {
         console.error(err);
       }
@@ -31,8 +31,8 @@ export default function ContributeLayout() {
     async function fetchCategories() {
       try {
         const response = await handleGetCategories();
-        if (response) {
-          setCategories(response);
+        if (response.data) {
+          setCategories(response.data);
         }
       } catch (error) {
         console.error(error);

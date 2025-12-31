@@ -185,21 +185,38 @@ export default function CategoryExplorer() {
                   {q.options.map((opt) => (
                     <ListItem
                       key={opt}
-                      style={{
-                        marginBottom: "4px",
-                        textDecoration: "underline",
-                        cursor: "pointer",
-                        listStyle: "none",
-                      }}
                       onClick={() => {
                         setLoadResponseModalOpen(true);
                         setSearchValue(opt);
                       }}
+                      sx={{
+                        mb: 0.5,
+                        px: 1.5,
+                        py: 0.75,
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        listStyle: "none",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        transition: "background-color 0.2s ease",
+                        "&:hover": {
+                          backgroundColor: "#f5f5f5",
+                        },
+                      }}
                     >
-                      {opt} -{" "}
+                      <span style={{ textDecoration: "underline" }}>{opt}</span>
+
                       <span
-                        style={{ fontWeight: "bold" }}
-                        onClick={() => setSearchValue(opt)}
+                        style={{
+                          fontWeight: "bold",
+                          fontFamily: "monospace",
+                          background: "#eee",
+                          padding: "2px 8px",
+                          borderRadius: "12px",
+                          minWidth: "32px",
+                          textAlign: "center",
+                        }}
                       >
                         {q.answers[opt] || 0}
                       </span>

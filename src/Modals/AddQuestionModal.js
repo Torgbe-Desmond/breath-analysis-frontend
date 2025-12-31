@@ -13,7 +13,6 @@ function AddQuestionModals({
   const [options, setOptions] = useState("");
   const [categoryId, setCategoryId] = useState("");
 
-  console.log("categories",categories)
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -30,10 +29,9 @@ function AddQuestionModals({
       };
 
       const response = await handlePostQuestion([field]);
-      console.log("response", response);
 
-      if (response?.success) {
-        setQuestions((prev) => [...response.questions, ...prev]);
+      if (response?.data) {
+        setQuestions((prev) => [...response.data, ...prev]);
         alert("Field created successfully");
 
         // reset form only
