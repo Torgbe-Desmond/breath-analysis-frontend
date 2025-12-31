@@ -1,3 +1,5 @@
+import { API_URL } from "./api";
+
 async function getQuestionsByCategory(
   selectedCategoryId,
   page = 1,
@@ -5,12 +7,13 @@ async function getQuestionsByCategory(
 ) {
   try {
     const response = await fetch(
-      `http://localhost:3000/questions/${selectedCategoryId}/insights?page=${page}&limit=${limit}`,
+      `${API_URL}/questions/${selectedCategoryId}/insights?page=${page}&limit=${limit}`,
       {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // added
       }
     );
 

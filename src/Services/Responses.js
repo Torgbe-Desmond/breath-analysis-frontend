@@ -11,6 +11,8 @@ async function getResponseByValue(value, page = 1, limit = 3) {
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include", // added
+
       body: JSON.stringify({ value }),
     }
   );
@@ -19,7 +21,9 @@ async function getResponseByValue(value, page = 1, limit = 3) {
 }
 
 async function getResponseById(id) {
-  const response = await fetch(`${API_URL}/responses/search/${id}`);
+  const response = await fetch(`${API_URL}/responses/search/${id}`, {
+    credentials: "include", // added
+  });
 
   if (!response.ok) {
     throw new Error("Failed to fetch responses");

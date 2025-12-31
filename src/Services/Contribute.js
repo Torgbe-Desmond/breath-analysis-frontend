@@ -1,19 +1,22 @@
-const API_URL = "http://localhost:3000";
+import { API_URL } from "./api";
 
 async function handleGetCategories() {
-  const res = await fetch(`${API_URL}/categories`);
+  const res = await fetch(`${API_URL}/categories`, {
+    credentials: "include", // added
+  });
 
   if (!res.ok) {
     throw new Error("Failed to fetch categories");
   }
 
   const data = await res.json();
-
   return data;
 }
 
 async function handleGetQuestions() {
-  const res = await fetch(`${API_URL}/questions`);
+  const res = await fetch(`${API_URL}/questions`, {
+    credentials: "include", // added
+  });
   return await res.json();
 }
 
@@ -23,6 +26,7 @@ async function handlePostQuestion(field) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include", // added
     body: JSON.stringify(field),
   });
 
@@ -34,7 +38,10 @@ async function handlePostQuestion(field) {
 }
 
 async function handleDeleteQuestion(id) {
-  const res = await fetch(`${API_URL}/questions/${id}`, { method: "DELETE" });
+  const res = await fetch(`${API_URL}/questions/${id}`, {
+    method: "DELETE",
+    credentials: "include", // added
+  });
   return await res.json();
 }
 
@@ -42,6 +49,7 @@ async function handleUpdateQuestion(id, data) {
   const res = await fetch(`${API_URL}/questions/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
+    credentials: "include", // added
     body: JSON.stringify(data),
   });
   return await res.json();
