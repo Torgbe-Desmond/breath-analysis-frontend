@@ -1,8 +1,21 @@
+.wrapper {
+    /* max-width: 720px; */
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+
 .contribute-container {
     display: flex;
 
     gap: 1.5rem;
-    border: 1px solid #ddd;
+    /* border: 1px solid #ddd; */
 
     background: white;
     border-radius: 16px;
@@ -116,6 +129,25 @@
         padding: 1.5rem;
     }
 }
+
+.preview-card {
+    margin-top: 2rem;
+    padding: 1rem;
+    border-radius: 12px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+.preview-card h4 {
+    margin-bottom: 0.75rem;
+}
+
+.preview-card label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 
 /* Keyframes for alert-style modal */
 @keyframes popUp {

@@ -4,7 +4,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { IconButton } from "@mui/material";
-import "./pages/Contribute.css"
+import "./pages/Contribute.css";
 
 function Question({
   handleEdit,
@@ -14,7 +14,9 @@ function Question({
   handleExpand,
 }) {
   return (
-    <div>
+    <div
+      
+    >
       <div key={question._id} className="question-card">
         <div className="question-header">
           <IconButton onClick={() => handleExpand(question._id)}>
@@ -32,7 +34,7 @@ function Question({
             <IconButton onClick={() => handleOpenDeleteModal(question._id)}>
               <DeleteIcon />
             </IconButton>
-          </div>
+          </div>  
         </div>
 
         {expanded === question._id && (

@@ -1,92 +1,100 @@
 import { useEffect, useState } from "react";
-import "../App.css";
 import "./Contribute.css";
 import { handlePostQuestion } from "../Services/Contribute";
+import Filter from "../Filter";
+import AddQuestionModals from "../Modals/AddQuestionModal";
+import DraftQuestions from "../DraftQuestions";
+import { Button } from "@mui/material";
+
+const STORAGE_KEY = "draft_questions";
 
 export default function Contribute({ categories, setQuestions }) {
-  const [label, setLabel] = useState("");
-  const [type, setType] = useState("");
-  const [options, setOptions] = useState("");
-  const [categoryId, setCategoryId] = useState("");
+  const [drafts, setDrafts] = useState([]);
+  const [modalAddOpen, setAddModalOpen] = useState(false);
+  const [filterType, setFilterType] = useState("");
+  const [search, setSearch] = useState("");
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  /* ================= SYNC DRAFTS TO LOCAL STORAGE ================= */
+  // useEffect(() => {
+  //   localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts));
+  // }, [drafts]);
+
+  /* ================= LOAD DRAFTS FROM LOCAL STORAGE ================= */
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      setDrafts(JSON.parse(saved));
+    }
+  }, []);
+
+  function Remove(id) {
+    let questions = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    let filteredQuestions = questions.filter((q) => q.id !== id);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredQuestions));
+    setDrafts(filteredQuestions);
+  }
+
+  /* ================= SUBMIT ALL DRAFTS ================= */
+  const submitAllDrafts = async () => {
+    if (!drafts.length) {
+      alert("No draft questions to submit");
+      return;
+    }
 
     try {
-      const field = {
-        label,
-        type,
-        categoryId,
-        options:
-          type === "checkbox" || type === "radio" || type === "dropdown"
-            ? options.split(",").map((o) => o.trim())
-            : [],
-      };
+      const response = await handlePostQuestion(drafts);
 
-      const response = await handlePostQuestion([field]);
-      console.log("response", response);
-
-      if (response?.success) {
-        setQuestions((prev) => [...response.questions, ...prev]);
-        alert("Field created successfully");
-
-        // reset form only
-        setLabel("");
-        setType("");
-        setOptions("");
-        setCategoryId("");
+      if (response?.data) {
+        setQuestions((prev) => [...response.data, ...prev]);
+        setDrafts([]);
+        localStorage.removeItem(STORAGE_KEY);
+        alert("All questions submitted successfully");
       }
     } catch (error) {
       console.error(error);
+      alert("Failed to submit drafts");
     }
-  }
+  };
+
+  const filterProps = {
+    setAddModalOpen,
+    search,
+    setSearch,
+    filterType,
+    setFilterType,
+  };
+
   return (
-    <section className="contribute-container">
-      <form className="form" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Enter field label"
-          value={label}
-          onChange={(e) => setLabel(e.target.value)}
-          required
-        />
+    <section>
+      {/* ================= FILTER / HEADER ================= */}
+      <Filter {...filterProps} />
 
-        <select value={type} onChange={(e) => setType(e.target.value)} required>
-          <option value="">Select field type</option>
-          <option value="text">Text</option>
-          <option value="textarea">Textarea</option>
-          <option value="radio">Radio</option>
-          <option value="checkbox">Checkbox</option>
-          <option value="dropdown">Dropdown</option>
-        </select>
+      {/* ================= ADD QUESTION MODAL ================= */}
+      <AddQuestionModals
+        modalAddOpen={modalAddOpen}
+        setAddModalOpen={setAddModalOpen}
+        categories={categories}
+        setDrafts={setDrafts}
+      />
 
-        {(type === "checkbox" || type === "radio" || type === "dropdown") && (
-          <input
-            type="text"
-            placeholder="Separate options with commas"
-            value={options}
-            onChange={(e) => setOptions(e.target.value)}
-          />
-        )}
-
-        <select
-          value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-          required
+      {/* ================= DRAFT  PREVIEW ================= */}
+      <DraftQuestions
+        drafts={JSON.parse(localStorage.getItem(STORAGE_KEY))}
+        setDrafts={setDrafts}
+        submitAll={submitAllDrafts}
+        Remove={Remove}
+      />
+      {drafts.length > 0 && (
+        <Button
+          onClick={() => {
+            submitAllDrafts();
+          }}
+          variant="contained"
+          className="btn"
         >
-          <option value="">Select category</option>
-          {Array.isArray(categories) &&
-            categories.map((c) => (
-              <option key={c._id} value={c._id}>
-                {c.name}
-              </option>
-            ))}
-        </select>
-
-        <button className="btn" type="submit">
-          Submit
-        </button>
-      </form>
+          Submit All
+        </Button>
+      )}
     </section>
   );
 }

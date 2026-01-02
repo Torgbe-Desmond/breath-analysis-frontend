@@ -7,6 +7,7 @@ import {
   Select,
   MenuItem,
   Button,
+  Skeleton,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -25,8 +26,19 @@ import Question from "./Question";
 import UpdateQuestionModals from "./Modals/UpdateQuestionModal";
 import Filter from "./Filter";
 import AddQuestionModals from "./Modals/AddQuestionModal";
+import AddIcon from "@mui/icons-material/Add";
 
-export default function Questions({ categories, questions, setQuestions }) {
+export default function Questions({
+  categories,
+  questions,
+  setQuestions,
+  handlePrevPage,
+  handleNextPage,
+  hasMore,
+  page,
+  totalQuestions,
+  loading,
+}) {
   const [label, setLabel] = useState("");
   const [type, setType] = useState("");
   const [options, setOptions] = useState("");
@@ -81,7 +93,6 @@ export default function Questions({ categories, questions, setQuestions }) {
     return matchesType && matchesSearch;
   });
 
-
   const deleteQuestionProps = {
     deleteModalOpen,
     setDeleteModalOpen,
@@ -126,20 +137,98 @@ export default function Questions({ categories, questions, setQuestions }) {
     setAddModalOpen,
     modalAddOpen,
     setQuestions,
-    categories
+    categories,
   };
 
-  return (
-    <div className="questions-container">
-      <Filter {...filterProps} />
 
-      {filteredQuestions.map((question) => (
-        <Question
-          key={question?._id}
-          {...questionsProps}
-          question={question}
+  const SkeletonQuestion = () => (
+    <div style={{ marginBottom: "1rem" }}>
+      <Skeleton variant="text" width="60%" height={24} />
+      <Skeleton variant="rectangular" height={20} sx={{ mt: 1 }} />
+    </div>
+  );
+
+  // ================= JSX =================
+  if (loading)
+    return (
+      <div className="wrapper">
+        <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
+        {[...Array(5)].map((_, i) => (
+          <SkeletonQuestion key={i} />
+        ))}
+        <Skeleton variant="rectangular" height={48}  />
+      </div>
+    );
+
+  return (
+    <div className="">
+      <Box
+        className="question-filters"
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100px",
+          gap: "1rem",
+          mb: 3,
+          maxWidth: "100%",
+          flexDirection: "row",
+        }}
+      >
+        {/* TYPE FILTER */}
+
+        <select
+          value={filterType}
+          onChange={(e) => setFilterType(e.target.value)}
+          required
+        >
+          <option value="">Select field type</option>
+          <option value="text">Text</option>
+          <option value="textarea">Textarea</option>
+          <option value="radio">Radio</option>
+          <option value="checkbox">Checkbox</option>
+          <option value="dropdown">Dropdown</option>
+        </select>
+
+        {/* SEARCH */}
+
+        <input
+          type="text"
+          placeholder="Search questions..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
-      ))}
+      </Box>
+
+      <div
+        style={{
+          display: "grid",
+          alignItems: "center",
+          gap: "1.5rem",
+        }}
+      >
+        {filteredQuestions.map((question) => (
+          <Question
+            key={question?._id}
+            {...questionsProps}
+            question={question}
+          />
+        ))}
+      </div>
+
+      {
+        <div style={{ marginTop: 20, textAlign: "center" }}>
+          <Button onClick={handlePrevPage} disabled={page === 1}>
+            Previous
+          </Button>
+          <span style={{ margin: "0 10px", fontWeight: "bold" }}>
+            Page {page}
+          </span>
+          <Button onClick={handleNextPage} disabled={!hasMore}>
+            Next
+          </Button>
+        </div>
+      }
 
       <UpdateQuestionModals {...updateQuestionsModalProps} />
       <DeleteQuestionModals {...deleteQuestionProps} />

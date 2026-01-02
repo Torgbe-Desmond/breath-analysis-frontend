@@ -86,7 +86,7 @@
 
   .nav.open {
     max-height: 500px; /* enough to show all links */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 7px 10px rgba(0, 0, 0, 0.1);
   }
 
   .nav a {

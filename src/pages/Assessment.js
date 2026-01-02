@@ -7,18 +7,37 @@ import {
   UpdateResponse,
 } from "../Services/Assessment";
 import AlertInfo from "../AlertInfo";
-import { IconButton } from "@mui/material";
+import {
+  Alert,
+  Button,
+  CircularProgress,
+  IconButton,
+  Skeleton,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
+import FloatingCounter from "../FloatingCounter";
+import { useHandleGetQuestionsQuery } from "../features/questionApi";
+import {
+  useCreateResponseMutation,
+  useGetResponseByEmailQuery,
+  useUpdateResponseMutation,
+} from "../features/responseApi";
+import { skipToken } from "@reduxjs/toolkit/query";
+import "./Assessment.css";
+import * as Yup from "yup";
+import { useFormik } from "formik";
+
+const emailSchema = Yup.object({
+  email: Yup.string()
+    .email("Please enter a valid email")
+    .required("Email is required"),
+});
 
 export default function Assessment() {
-  const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
-  const [email, setEmail] = useState("");
   const [existingResponseId, setExistingResponseId] = useState(null);
-
-  const [loading, setLoading] = useState(false);
-  const [loadingSubmit, setLoadingSubmit] = useState(false);
-  const [isError, setIsError] = useState(false);
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -26,78 +45,73 @@ export default function Assessment() {
     severity: "success",
   });
 
-  /* ================= ALERTS ================= */
+  const formik = useFormik({
+    initialValues: { email: "" },
+    validationSchema: emailSchema,
+    validateOnChange: true,
+    validateOnBlur: true,
+    onSubmit: () => {},
+  });
 
-  const showSuccess = (message) => {
-    setSnackbar({ open: true, message, severity: "success" });
-  };
+  const email = formik.values.email;
 
-  const showError = (message) => {
-    setSnackbar({ open: true, message, severity: "error" });
-  };
+  /* ================= RTK QUERY ================= */
 
-  const closeSnackbar = () => {
-    setSnackbar((prev) => ({ ...prev, open: false }));
-  };
+  // Questions
+  const {
+    data: questionsData,
+    isLoading: loadingQuestions,
+    isError: isQuestionsError,
+    isFetching,
+    refetch,
+  } = useHandleGetQuestionsQuery();
 
-  /* ================= LOAD QUESTIONS ================= */
+  const questions = questionsData?.data || [];
 
-  async function fetchQuestions() {
-    try {
-      setLoading(true);
-      const response = await handleGetQuestions();
-      if (response?.data) {
-        setQuestions(response.data);
-      }
-    } catch (err) {
-      console.error(err);
-      setIsError(true);
-      showError("Failed to load questions");
-    } finally {
-      setLoading(false);
+  // Existing response (email dependent)
+  const { data: existingResponse } = useGetResponseByEmailQuery(
+    email && !formik.errors.email ? email : skipToken
+  );
+
+  // Mutations
+  const [createResponse, { isLoading: creating, isSuccess }] =
+    useCreateResponseMutation();
+
+  const [updateResponse, { isLoading: updating }] = useUpdateResponseMutation();
+
+  const loadingSubmit = creating || updating;
+
+  /* ================= EFFECTS ================= */
+
+  // When old response loads → populate answers
+  useEffect(() => {
+    if (!existingResponse?.data) {
+      setExistingResponseId(null);
+      setAnswers({});
+      return;
     }
-  }
 
-  useEffect(() => {
-    fetchQuestions();
-  }, []);
+    const { _id, answers } = existingResponse.data;
+    setExistingResponseId(_id);
 
-  /* ================= FETCH OLD RESPONSE BY EMAIL ================= */
+    const mapped = {};
+    answers.forEach((a) => {
+      mapped[a.questionId] = a.value;
+    });
+    setAnswers(mapped);
+  }, [existingResponse]);
 
-  useEffect(() => {
-    if (!email) return;
+  /* ================= ALERT HELPERS ================= */
 
-    console.log(email);
+  const showSuccess = (message) =>
+    setSnackbar({ open: true, message, severity: "success" });
 
-    const delay = setTimeout(async () => {
-      try {
-        const res = await GetResponseByEmail(email);
-        console.log("byEmail", res);
+  const showError = (message) =>
+    setSnackbar({ open: true, message, severity: "error" });
 
-        if (res?.data) {
-          const { _id, answers } = res.data;
+  const closeSnackbar = () => setSnackbar((p) => ({ ...p, open: false }));
 
-          setExistingResponseId(_id);
-
-          // Convert answers array → object map
-          const mappedAnswers = {};
-          answers.forEach((a) => {
-            mappedAnswers[a.questionId] = a.value;
-          });
-
-          setAnswers(mappedAnswers);
-        }
-      } catch (err) {
-        // no existing response is OK
-        setExistingResponseId(null);
-        setAnswers({});
-      }
-    }, 600); // debounce email input
-
-    return () => clearTimeout(delay);
-  }, [email]);
-
-  /* ================= HANDLE INPUT ================= */
+  /* ================= INPUT HANDLER ================= */
 
   const handleChange = (questionId, value, type, checked) => {
     setAnswers((prev) => {
@@ -109,7 +123,9 @@ export default function Assessment() {
           ? [...arr, value]
           : arr.filter((v) => v !== value);
 
-        if (updated[questionId].length === 0) delete updated[questionId];
+        if (updated[questionId].length === 0) {
+          delete updated[questionId];
+        }
       } else {
         updated[questionId] = value;
       }
@@ -129,72 +145,68 @@ export default function Assessment() {
     const formattedAnswers = questions
       .map((q) => {
         const value = answers[q._id];
-        if (!value || (Array.isArray(value) && value.length === 0)) return null;
-
-        return {
-          questionId: q._id,
-          categoryId: q.categoryId,
-          value,
-        };
+        if (!value || (Array.isArray(value) && !value.length)) return null;
+        return { questionId: q._id, categoryId: q.categoryId, value };
       })
       .filter(Boolean);
 
-    if (formattedAnswers.length === 0) {
+    if (!formattedAnswers.length) {
       showError("Please answer at least one question");
       return;
     }
 
     try {
-      setLoadingSubmit(true);
-
       if (existingResponseId) {
-        await UpdateResponse(existingResponseId, formattedAnswers);
+        await updateResponse({
+          responseId: existingResponseId,
+          answers: formattedAnswers,
+          email,
+        }).unwrap();
+
         showSuccess("Response updated successfully");
+        window.location.reload();
       } else {
-        await CreateResponse(formattedAnswers, email);
+        console.log("formattedAnswers", formattedAnswers);
+        await createResponse({
+          answers: formattedAnswers,
+          email,
+        }).unwrap();
+
         showSuccess("Response submitted successfully");
       }
-
-      window.location.reload();
-    } catch (err) {
-      console.error(err);
+    } catch {
       showError("Submission failed");
-    } finally {
-      setLoadingSubmit(false);
     }
   };
 
-  /* ================= RENDER INPUT ================= */
-
+  // ================= RENDER INPUT =================
   const renderInput = (q) => {
-    const value = answers[q._id];
-
+    const value = answers[q._id] || "";
     switch (q.type) {
       case "textarea":
         return (
           <textarea
             rows={3}
-            value={value || ""}
+            value={value}
             onChange={(e) => handleChange(q._id, e.target.value, "textarea")}
           />
         );
-
       case "radio":
         return q.options.map((opt) => (
-          <label key={opt}>
+          <label className="label" key={opt}>
+            {" "}
             <input
               type="radio"
               name={q._id}
               checked={value === opt}
               onChange={() => handleChange(q._id, opt, "radio")}
             />
-            {opt}
+            <span>{opt}</span>
           </label>
         ));
-
       case "checkbox":
         return q.options.map((opt) => (
-          <label key={opt}>
+          <label className="label" key={opt}>
             <input
               type="checkbox"
               checked={Array.isArray(value) && value.includes(opt)}
@@ -202,63 +214,96 @@ export default function Assessment() {
                 handleChange(q._id, opt, "checkbox", e.target.checked)
               }
             />
-            {opt}
+            <span>{opt}</span>
           </label>
         ));
-
       case "dropdown":
         return (
           <select
-            value={value || ""}
+            value={value}
             onChange={(e) => handleChange(q._id, e.target.value, "dropdown")}
           >
             <option value="">Select</option>
             {q.options.map((opt) => (
               <option key={opt} value={opt}>
-                {opt}
+                <span>{opt}</span>
               </option>
             ))}
           </select>
         );
-
       default:
         return null;
     }
   };
 
-  /* ================= JSX ================= */
+  // ================= JSX =================
+  const SkeletonQuestion = () => (
+    <div style={{ marginBottom: "1rem" }}>
+      <Skeleton variant="text" width="60%" height={24} />
+      <Skeleton variant="rectangular" height={20} sx={{ mt: 1 }} />
+    </div>
+  );
+
+  // ================= JSX =================
+  if (isFetching)
+    return (
+      <div className="assessment-container">
+        <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
+        {[...Array(5)].map((_, i) => (
+          <SkeletonQuestion key={i} />
+        ))}
+        <Skeleton variant="rectangular" height={48} width={150} />
+      </div>
+    );
+
+  function Reload() {
+    refetch();
+  }
+
+  if (isQuestionsError)
+    return (
+      <div className="assessment-container">
+        <Alert severity="error"> Failed to load questions</Alert>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            width: "100%",
+          }}
+        >
+          <Button
+            className="assessment-btn"
+            onClick={Reload}
+            variant="contained"
+            color="primary"
+          >
+            Reload
+          </Button>
+        </div>
+      </div>
+    );
 
   return (
     <div className="assessment-container">
       <h3 className="assessment-title">Assessment</h3>
-
       <p>
         Enter your email to continue a previous assessment or submit a new one.
       </p>
 
-      <div style={{ display: "flex", gap: "1.5rem" }}>
-        <input
-          type="email"
-          value={email}
-          placeholder="Enter your email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        {
-          <IconButton
-            onClick={() => {
-              setEmail("");
-              setAnswers({});
-            }}
-          >
-            <ClearIcon />
-          </IconButton>
-        }
-      </div>
-
-      {loading && <p>Loading questions...</p>}
-
       <form className="assessment-form">
+        <div>
+          <input
+            type="email"
+            name="email"
+            value={formik.values.email}
+            placeholder="Enter your email"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+          />
+        </div>
+        {formik.touched.email && formik.errors.email && (
+          <Alert severity="error"> {formik.errors.email}</Alert>
+        )}
         {questions.map((q) => (
           <div key={q._id} className="assessment-question">
             <label>
@@ -269,24 +314,34 @@ export default function Assessment() {
         ))}
       </form>
 
-      <button
-        type="button"
-        className="assessment-btn"
-        onClick={handleSubmit}
-        disabled={loadingSubmit}
-      >
-        {loadingSubmit
-          ? "Submitting..."
-          : existingResponseId
-          ? "Update Response"
-          : "Submit Response"}
-      </button>
+      <div style={{ marginTop: "1rem" }}>
+        <Button
+          type="button"
+          onClick={handleSubmit}
+          disabled={loadingSubmit}
+          variant="contained"
+          color="primary"
+          className="assessment-btn"
+        >
+          {loadingSubmit
+            ? "Submitting..."
+            : existingResponseId
+            ? "Update Response"
+            : "Submit Response"}
+        </Button>
+      </div>
 
       <AlertInfo
         open={snackbar.open}
         message={snackbar.message}
         severity={snackbar.severity}
         onClose={closeSnackbar}
+      />
+
+      {/* Floating counter */}
+      <FloatingCounter
+        totalInputs={questions.length}
+        filledInputs={Object.keys(answers).length}
       />
     </div>
   );

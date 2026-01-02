@@ -12,6 +12,7 @@
 }
 
 
+
 .assessment-form {
     display: flex;
     flex-direction: column;
@@ -98,6 +99,14 @@
 .assessment-option input[type="checkbox"] {
     accent-color: #2563eb;
     margin: 0;
+}
+
+.label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 1.5rem;
 }
 
 /* ================= MOBILE RESPONSIVE ================= */

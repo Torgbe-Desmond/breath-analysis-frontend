@@ -20,6 +20,16 @@ async function handleGetQuestions() {
   return await res.json();
 }
 
+async function handleGetDashboardQuestions(page = 1, limit = 10) {
+  const res = await fetch(
+    `${API_URL}/questions/dashboard/?page=${page}&limit=${limit}`,
+    {
+      credentials: "include", // added
+    }
+  );
+  return await res.json();
+}
+
 async function handlePostQuestion(field) {
   const res = await fetch(`${API_URL}/questions`, {
     method: "POST",
@@ -61,4 +71,5 @@ export {
   handlePostQuestion,
   handleDeleteQuestion,
   handleUpdateQuestion,
+  handleGetDashboardQuestions,
 };

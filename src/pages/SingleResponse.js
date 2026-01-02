@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getResponseById } from "../Services/Responses";
 import { useParams } from "react-router-dom";
 import AlertInfo from "../AlertInfo";
+import { Skeleton } from "@mui/material";
 
 function SingleResponse() {
   const { responseId } = useParams();
@@ -43,6 +44,25 @@ function SingleResponse() {
 
     fetchResponse();
   }, [responseId]);
+
+  const SkeletonQuestion = () => (
+    <div style={{ marginBottom: "1rem" }}>
+      <Skeleton variant="text" width="60%" height={24} />
+      <Skeleton variant="rectangular" height={20} sx={{ mt: 1 }} />
+    </div>
+  );
+
+  // ================= JSX =================
+  if (loading)
+    return (
+      <div className="assessment-container">
+        <Skeleton variant="rectangular" height={60} sx={{ mb: 2 }} />
+        {[...Array(5)].map((_, i) => (
+          <SkeletonQuestion key={i} />
+        ))}
+        <Skeleton variant="rectangular" height={48} width={150} />
+      </div>
+    );
 
   return (
     <div className="assessment-container">

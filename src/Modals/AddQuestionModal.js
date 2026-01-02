@@ -1,49 +1,45 @@
 import { Box, Modal } from "@mui/material";
-import { handlePostQuestion } from "../Services/Contribute";
 import { useState } from "react";
 
-function AddQuestionModals({
-  setAddModalOpen,
+const STORAGE_KEY = "draft_questions";
+
+export default function AddQuestionModals({
   modalAddOpen,
-  setQuestions,
+  setAddModalOpen,
   categories,
+  setDrafts,
 }) {
   const [label, setLabel] = useState("");
   const [type, setType] = useState("");
   const [options, setOptions] = useState("");
   const [categoryId, setCategoryId] = useState("");
 
-
-  async function handleSubmit(e) {
+  /* ================= ADD DRAFT ================= */
+  const addDraft = (e) => {
     e.preventDefault();
 
-    try {
-      const field = {
-        label,
-        type,
-        categoryId,
-        options:
-          type === "checkbox" || type === "radio" || type === "dropdown"
-            ? options.split(",").map((o) => o.trim())
-            : [],
-      };
+    const draft = {
+      id: crypto.randomUUID(),
+      label,
+      type,
+      categoryId,
+      options: ["radio", "checkbox", "dropdown"].includes(type)
+        ? options.split(",").map((o) => o.trim())
+        : [],
+    };
 
-      const response = await handlePostQuestion([field]);
+    let old = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...old, draft]));
 
-      if (response?.data) {
-        setQuestions((prev) => [...response.data, ...prev]);
-        alert("Field created successfully");
+    // setDrafts((prev) => [...prev, draft]);
 
-        // reset form only
-        setLabel("");
-        setType("");
-        setOptions("");
-        setCategoryId("");
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
+    // reset form
+    setLabel("");
+    setType("");
+    setOptions("");
+    setCategoryId("");
+    setAddModalOpen(false);
+  };
 
   return (
     <Modal open={modalAddOpen} onClose={() => setAddModalOpen(false)}>
@@ -54,14 +50,14 @@ function AddQuestionModals({
           top: "25%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: { sx: 400, lg: 600 },
+          width: { xs: 320, sm: 400, md: 600 },
           bgcolor: "background.paper",
           p: 4,
           borderRadius: 2,
           boxShadow: 24,
         }}
       >
-        <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
+        <form onSubmit={addDraft} style={{ display: "grid", gap: "1rem" }}>
           <input
             type="text"
             placeholder="Enter field label"
@@ -98,21 +94,18 @@ function AddQuestionModals({
             required
           >
             <option value="">Select category</option>
-            {Array.isArray(categories) &&
-              categories.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name}
-                </option>
-              ))}
+            {categories?.map((c) => (
+              <option key={c._id} value={c._id}>
+                {c.name}
+              </option>
+            ))}
           </select>
 
           <button className="btn" type="submit">
-            Submit
+            Add to Drafts
           </button>
         </form>
       </Box>
     </Modal>
   );
 }
-
-export default AddQuestionModals;

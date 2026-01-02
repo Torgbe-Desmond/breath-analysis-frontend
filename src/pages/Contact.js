@@ -4,29 +4,44 @@ import {
   Button,
   Snackbar,
   Alert,
-  TextField,
   Typography,
 } from "@mui/material";
 import "./Contribute.css";
+import { useHandleCreateFeedbackMutation } from "../features/feedbackApi";
 
 function Contact() {
   const [feedback, setFeedback] = useState("");
   const [successOpen, setSuccessOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = () => {
+  const [handleCreateFeedback, { isLoading }] =
+    useHandleCreateFeedbackMutation();
+
+  const handleSubmit = async () => {
     if (!feedback.trim()) {
+      setErrorMessage("Please enter some feedback before submitting.");
       setErrorOpen(true);
       return;
     }
 
-    setFeedback("");
-    setSuccessOpen(true);
+    try {
+      await handleCreateFeedback({ message: feedback }).unwrap();
+
+      setFeedback("");
+      setSuccessOpen(true);
+    } catch (err) {
+      console.error("Feedback error:", err);
+      setErrorMessage(
+        err?.data?.message || "Failed to send feedback. Please try again."
+      );
+      setErrorOpen(true);
+    }
   };
 
   return (
     <Box
-      className="contribute-container "
+      className="contribute-container"
       sx={{
         maxWidth: 600,
         mx: "auto",
@@ -37,10 +52,6 @@ function Contact() {
         gap: 2,
       }}
     >
-      <Typography variant="h4" fontWeight="bold">
-        Send a Feedback
-      </Typography>
-
       <Typography color="text.secondary">
         Share your feedback, suggestions, or thoughts about the Bad Breath
         Analysis platform. Your feedback helps improve the experience.
@@ -49,6 +60,7 @@ function Contact() {
       <textarea
         placeholder="Your feedback"
         rows={5}
+        value={feedback}
         style={{
           width: "100%",
           padding: "10px",
@@ -60,12 +72,13 @@ function Contact() {
       />
 
       <Button
-        className="btn"
+        className="assessment-btn"
         variant="contained"
         onClick={handleSubmit}
+        disabled={isLoading}
         sx={{ alignSelf: "flex-start" }}
       >
-        Send Feedback
+        {isLoading ? "Sending..." : "Send Feedback"}
       </Button>
 
       {/* Success Snackbar */}
@@ -74,7 +87,10 @@ function Contact() {
         autoHideDuration={3000}
         onClose={() => setSuccessOpen(false)}
       >
-        <Alert severity="success" onClose={() => setSuccessOpen(false)}>
+        <Alert
+          severity="success"
+          onClose={() => setSuccessOpen(false)}
+        >
           Feedback sent successfully!
         </Alert>
       </Snackbar>
@@ -85,8 +101,11 @@ function Contact() {
         autoHideDuration={3000}
         onClose={() => setErrorOpen(false)}
       >
-        <Alert severity="error" onClose={() => setErrorOpen(false)}>
-          Please enter some feedback before submitting.
+        <Alert
+          severity="error"
+          onClose={() => setErrorOpen(false)}
+        >
+          {errorMessage}
         </Alert>
       </Snackbar>
     </Box>
