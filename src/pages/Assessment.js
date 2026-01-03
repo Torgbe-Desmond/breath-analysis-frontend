@@ -173,6 +173,7 @@ export default function Assessment() {
         }).unwrap();
 
         showSuccess("Response submitted successfully");
+        window.location.reload();
       }
     } catch {
       showError("Submission failed");
