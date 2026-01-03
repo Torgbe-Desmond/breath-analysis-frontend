@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Alert } from "@mui/material";
+import { Alert, Paper } from "@mui/material";
 import { skipToken } from "@reduxjs/toolkit/query";
 
 import { useHandleGetCategoriesQuery } from "../features/categoryApi";
@@ -56,11 +56,13 @@ export default function CategoryExplorer() {
     isError: qError,
     isFetching: qFetching,
     isSuccess,
+    error,
   } = useGetQuestionsByCategoryQuery(
     selectedCategory
       ? { categoryId: selectedCategory, page, limit: PAGE_LIMIT }
       : skipToken
   );
+
 
   useEffect(() => {
     setIsFetchingQuestions(qFetching);
@@ -99,7 +101,7 @@ export default function CategoryExplorer() {
     handleClearCategory,
     categoryError,
     catIsFetching,
-    refetchCategories
+    refetchCategories,
   };
 
   const questionProps = {
@@ -116,7 +118,7 @@ export default function CategoryExplorer() {
   };
 
   return (
-    <div
+    <Paper
       className="assessment-container"
       style={{ maxWidth: 800, margin: "20px auto" }}
     >
@@ -158,6 +160,6 @@ export default function CategoryExplorer() {
         setLoadResponseModalOpen={setLoadResponseModalOpen}
         searchValue={searchValue}
       />
-    </div>
+    </Paper>
   );
 }

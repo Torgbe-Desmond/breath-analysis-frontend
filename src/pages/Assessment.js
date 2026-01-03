@@ -12,6 +12,7 @@ import {
   Button,
   CircularProgress,
   IconButton,
+  Paper,
   Skeleton,
   Typography,
   useTheme,
@@ -263,7 +264,7 @@ export default function Assessment() {
 
   if (isQuestionsError)
     return (
-      <div className="assessment-container">
+      <Paper className="assessment-container">
         <Alert severity="error"> Failed to load questions</Alert>
         <div
           style={{
@@ -281,11 +282,11 @@ export default function Assessment() {
             Reload
           </Button>
         </div>
-      </div>
+      </Paper>
     );
 
   return (
-    <div className="assessment-container">
+    <Paper className="assessment-container">
       <h3 className="assessment-title">Assessment</h3>
       <p>
         Enter your email to continue a previous assessment or submit a new one.
@@ -344,6 +345,6 @@ export default function Assessment() {
         totalInputs={questions.length}
         filledInputs={Object.keys(answers).length}
       />
-    </div>
+    </Paper>
   );
 }

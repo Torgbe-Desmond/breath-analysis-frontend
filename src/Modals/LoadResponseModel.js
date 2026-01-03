@@ -1,4 +1,4 @@
-import { Box, Button, Modal, Typography } from "@mui/material";
+import { Alert, Box, Button, Modal, Paper, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { getResponseByValue } from "../Services/Responses";
 import { Link } from "react-router-dom";
@@ -11,7 +11,7 @@ function LoadResponseModel({
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [limit] = useState(3);
+  const [limit] = useState(10);
   const [hasMore, setHasMore] = useState(false);
 
   // Reset pagination when search value changes
@@ -43,7 +43,7 @@ function LoadResponseModel({
       open={loadResponseModalOpen}
       onClose={() => setLoadResponseModalOpen(false)}
     >
-      <Box
+      <Paper
         sx={{
           position: "absolute",
           top: "50%",
@@ -60,8 +60,13 @@ function LoadResponseModel({
           gap: 3,
         }}
       >
-        <Typography variant="h5" fontWeight="bold" textAlign="center">
-          Filtered Responses
+        <Typography
+          className="assessment-title"
+          variant="h5"
+          fontWeight="bold"
+          textAlign="flex-start"
+        >
+          Responses
         </Typography>
 
         {loading ? (
@@ -126,7 +131,8 @@ function LoadResponseModel({
             </Button>
           </Box>
         )}
-      </Box>
+        <Alert severity="info">These are real life experiences of people</Alert>
+      </Paper>
     </Modal>
   );
 }

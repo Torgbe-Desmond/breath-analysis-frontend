@@ -5,6 +5,7 @@ import {
   Snackbar,
   Alert,
   Typography,
+  Paper,
 } from "@mui/material";
 import "./Contribute.css";
 import { useHandleCreateFeedbackMutation } from "../features/feedbackApi";
@@ -40,7 +41,7 @@ function Contact() {
   };
 
   return (
-    <Box
+    <Paper
       className="contribute-container"
       sx={{
         maxWidth: 600,
@@ -108,7 +109,7 @@ function Contact() {
           {errorMessage}
         </Alert>
       </Snackbar>
-    </Box>
+    </Paper>
   );
 }
 
