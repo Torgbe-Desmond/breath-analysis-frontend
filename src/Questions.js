@@ -27,6 +27,8 @@ import UpdateQuestionModals from "./Modals/UpdateQuestionModal";
 import Filter from "./Filter";
 import AddQuestionModals from "./Modals/AddQuestionModal";
 import AddIcon from "@mui/icons-material/Add";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 export default function Questions({
   categories,
@@ -140,7 +142,6 @@ export default function Questions({
     categories,
   };
 
-
   const SkeletonQuestion = () => (
     <div style={{ marginBottom: "1rem" }}>
       <Skeleton variant="text" width="60%" height={24} />
@@ -156,7 +157,7 @@ export default function Questions({
         {[...Array(5)].map((_, i) => (
           <SkeletonQuestion key={i} />
         ))}
-        <Skeleton variant="rectangular" height={48}  />
+        <Skeleton variant="rectangular" height={48} />
       </div>
     );
 
@@ -218,15 +219,15 @@ export default function Questions({
 
       {
         <div style={{ marginTop: 20, textAlign: "center" }}>
-          <Button onClick={handlePrevPage} disabled={page === 1}>
-            Previous
-          </Button>
+          <IconButton onClick={handlePrevPage} disabled={page === 1}>
+            <ArrowBackIosIcon />
+          </IconButton>
           <span style={{ margin: "0 10px", fontWeight: "bold" }}>
             Page {page}
           </span>
-          <Button onClick={handleNextPage} disabled={!hasMore}>
-            Next
-          </Button>
+          <IconButton onClick={handleNextPage} disabled={!hasMore}>
+            <ArrowForwardIosIcon />
+          </IconButton>
         </div>
       }
 

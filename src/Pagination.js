@@ -1,18 +1,20 @@
-import { Button } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import React from "react";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 function Pagination({ handlePrevPage, page, handleNextPage, hasMore }) {
   return (
     <div>
       <div style={{ marginTop: 20, textAlign: "center" }}>
-        <Button onClick={handlePrevPage} disabled={page === 1}>
-          Previous
-        </Button>
+        <IconButton onClick={handlePrevPage} disabled={page === 1}>
+          <ArrowBackIosIcon />
+        </IconButton>
         <span style={{ margin: "0 10px", fontWeight: "bold" }}>
           Page {page}
         </span>
         <Button onClick={handleNextPage} disabled={!hasMore}>
-          Next
+          <ArrowForwardIosIcon />
         </Button>
       </div>
     </div>

@@ -6,12 +6,15 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
   Paper,
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useGetResponsesByValueQuery } from "../features/responseApi";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 function LoadResponseModel({
   loadResponseModalOpen,
@@ -121,25 +124,25 @@ function LoadResponseModel({
                 alignItems: "center",
               }}
             >
-              <Button
+              <IconButton
                 onClick={() => setPage((p) => Math.max(p - 1, 1))}
                 disabled={page === 1}
                 sx={{ mr: 2 }}
               >
-                Previous
-              </Button>
+                <ArrowBackIosIcon />
+              </IconButton>
 
               <Typography component="span" fontWeight="bold">
                 Page {page}
               </Typography>
 
-              <Button
+              <IconButton
                 onClick={() => setPage((p) => p + 1)}
                 disabled={!hasMore}
                 sx={{ ml: 2 }}
               >
-                Next
-              </Button>
+                <ArrowForwardIosIcon />
+              </IconButton>
             </Box>
           )}
         </DialogActions>

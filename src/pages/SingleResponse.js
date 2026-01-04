@@ -11,6 +11,7 @@ function SingleResponse() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [jsonData, setJsonData] = useState(null);
+  const [showButton, setShowButton] = useState(false);
   const [open, setOpen] = useState(false);
   const { id } = useParams();
   const [snackbar, setSnackbar] = useState({
@@ -35,10 +36,16 @@ function SingleResponse() {
 
   const responseJson = responseData?.data || [];
 
+  useEffect(() => {
+    if (responseJson) setShowButton(true);
+  }, [responseJson]);
+
   const handleOpen = async () => {
     setJsonData(responseJson);
     setOpen(true);
   };
+
+  console.log("jsonData", responseData);
 
   useEffect(() => {
     const fetchResponse = async () => {
@@ -135,7 +142,7 @@ function SingleResponse() {
         ))}
 
         <Box>
-          {jsonData && (
+          {showButton && (
             <Button
               className="assessment-btn"
               variant="contained"

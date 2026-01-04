@@ -11,6 +11,8 @@ import Loader from "../Loader";
 import QuestionList from "../QuestionList";
 import Pagination from "../Pagination";
 
+
+
 const PAGE_LIMIT = 3;
 
 export default function CategoryExplorer() {
@@ -62,7 +64,6 @@ export default function CategoryExplorer() {
       ? { categoryId: selectedCategory, page, limit: PAGE_LIMIT }
       : skipToken
   );
- console.log("error",error)
 
   useEffect(() => {
     setIsFetchingQuestions(qFetching);
