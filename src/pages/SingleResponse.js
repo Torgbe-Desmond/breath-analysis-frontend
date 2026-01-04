@@ -2,12 +2,17 @@ import { useEffect, useState } from "react";
 import { getResponseById } from "../Services/Responses";
 import { useParams } from "react-router-dom";
 import AlertInfo from "../AlertInfo";
-import { Skeleton } from "@mui/material";
+import { Box, Button, Paper, Skeleton } from "@mui/material";
+import JsonPreviewModal from "../Modals/JsonPreviewModal";
+import { useGetResponseJsonQuery } from "../features/responseApi";
 
 function SingleResponse() {
   const { responseId } = useParams();
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [jsonData, setJsonData] = useState(null);
+  const [open, setOpen] = useState(false);
+  const { id } = useParams();
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -24,6 +29,15 @@ function SingleResponse() {
 
   const closeSnackbar = () => {
     setSnackbar((prev) => ({ ...prev, open: false }));
+  };
+
+  const { data: responseData } = useGetResponseJsonQuery({ responseId });
+
+  const responseJson = responseData?.data || [];
+
+  const handleOpen = async () => {
+    setJsonData(responseJson);
+    setOpen(true);
   };
 
   useEffect(() => {
@@ -65,7 +79,7 @@ function SingleResponse() {
     );
 
   return (
-    <div className="assessment-container">
+    <Paper className="assessment-container">
       <h3 className="assessment-title">Response</h3>
 
       {loading && <p style={{ textAlign: "center" }}>Loading response...</p>}
@@ -119,6 +133,18 @@ function SingleResponse() {
             </div>
           </div>
         ))}
+
+        <Box>
+          {jsonData && (
+            <Button
+              className="assessment-btn"
+              variant="contained"
+              onClick={handleOpen}
+            >
+              View JSON
+            </Button>
+          )}
+        </Box>
       </form>
       <AlertInfo
         open={snackbar.open}
@@ -126,7 +152,13 @@ function SingleResponse() {
         severity={snackbar.severity}
         onClose={closeSnackbar}
       />
-    </div>
+
+      <JsonPreviewModal
+        open={open}
+        onClose={() => setOpen(false)}
+        jsonData={jsonData}
+      />
+    </Paper>
   );
 }
 

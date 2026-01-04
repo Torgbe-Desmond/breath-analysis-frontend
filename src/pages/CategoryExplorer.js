@@ -62,7 +62,7 @@ export default function CategoryExplorer() {
       ? { categoryId: selectedCategory, page, limit: PAGE_LIMIT }
       : skipToken
   );
-
+ console.log("error",error)
 
   useEffect(() => {
     setIsFetchingQuestions(qFetching);

@@ -1,54 +1,53 @@
-import { Alert, Box, Button, Modal, Paper, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Paper,
+  Typography,
+} from "@mui/material";
 import { useEffect, useState } from "react";
-import { getResponseByValue } from "../Services/Responses";
 import { Link } from "react-router-dom";
+import { useGetResponsesByValueQuery } from "../features/responseApi";
 
 function LoadResponseModel({
   loadResponseModalOpen,
   setLoadResponseModalOpen,
   searchValue,
 }) {
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
-  const [hasMore, setHasMore] = useState(false);
 
-  // Reset pagination when search value changes
+  // Use RTK Query directly to fetch paginated responses
+  const {
+    data: responseData,
+    isFetching,
+    refetch,
+  } = useGetResponsesByValueQuery(
+    { value: searchValue, page, limit },
+    {
+      skip: !searchValue, // Skip query if search is empty
+    }
+  );
+
+  // Reset page to 1 whenever search value changes
   useEffect(() => {
     setPage(1);
   }, [searchValue]);
 
-  useEffect(() => {
-    if (!searchValue || !loadResponseModalOpen) return;
-
-    const fetchResults = async () => {
-      setLoading(true);
-      try {
-        const res = await getResponseByValue(searchValue, page, limit);
-        setResults(res.data.results || []);
-        setHasMore(res.data.hasMore);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchResults();
-  }, [searchValue, page, limit, loadResponseModalOpen]);
+  const results = responseData?.data.results || [];
+  const hasMore = responseData?.data.hasMore || false;
 
   return (
-    <Modal
+    <Dialog
       open={loadResponseModalOpen}
       onClose={() => setLoadResponseModalOpen(false)}
     >
       <Paper
         sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
           width: { xs: 350, sm: 500 },
           maxHeight: "80vh",
           bgcolor: "background.paper",
@@ -60,80 +59,92 @@ function LoadResponseModel({
           gap: 3,
         }}
       >
-        <Typography
+        <DialogTitle
           className="assessment-title"
           variant="h5"
           fontWeight="bold"
           textAlign="flex-start"
         >
           Responses
-        </Typography>
+        </DialogTitle>
 
-        {loading ? (
-          <Typography align="center">Loading...</Typography>
-        ) : results.length === 0 ? (
-          <Typography align="center">No results found</Typography>
-        ) : (
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: {
-                xs: "1fr",
-                sm: "1fr 1fr",
-                md: "1fr 1fr 1fr",
-              },
-              gap: 2,
-            }}
-          >
-            {results.map((item, index) => (
-              <Link
-                key={item._id}
-                target="_blank"
-                rel="noopener noreferrer"
-                to={`/response/${item._id}`}
-                style={{ textDecoration: "none" }}
-              >
-                <Typography
-                  sx={{
-                    fontFamily: "monospace",
-                    textDecoration: "underline",
-                    textAlign: "center",
-                  }}
-                >
-                  Response {(page - 1) * limit + index + 1}
-                </Typography>
-              </Link>
-            ))}
-          </Box>
-        )}
-
-        {/* Pagination */}
-        {results.length > 0 && (
-          <Box textAlign="center">
-            <Button
-              onClick={() => setPage((p) => Math.max(p - 1, 1))}
-              disabled={page === 1}
-              sx={{ mr: 2 }}
-            >
-              Previous
-            </Button>
-
-            <Typography component="span" fontWeight="bold">
-              Page {page}
-            </Typography>
-
-            <Button
-              onClick={() => setPage((p) => p + 1)}
-              disabled={!hasMore}
-              sx={{ ml: 2 }}
-            >
-              Next
-            </Button>
-          </Box>
-        )}
         <Alert severity="info">These are real life experiences of people</Alert>
+
+        <DialogContent dividers>
+          {isFetching ? (
+            <Typography align="center">Loading...</Typography>
+          ) : results.length === 0 ? (
+            <Typography align="center">No results found</Typography>
+          ) : (
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "1fr",
+                  sm: "1fr 1fr",
+                  md: "1fr 1fr 1fr",
+                },
+                gap: 2,
+              }}
+            >
+              {results.map((item, index) => (
+                <Link
+                  key={item._id}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  to={`/response/${item._id}`}
+                  style={{ textDecoration: "none" }}
+                >
+                  <Typography
+                    sx={{
+                      fontFamily: "monospace",
+                      textDecoration: "underline",
+                      textAlign: "center",
+                    }}
+                  >
+                    Response {(page - 1) * limit + index + 1}
+                  </Typography>
+                </Link>
+              ))}
+            </Box>
+          )}
+        </DialogContent>
+
+        <DialogActions alignItems="center">
+          {results.length > 0 && (
+            <Box
+              textAlign="center"
+              sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                disabled={page === 1}
+                sx={{ mr: 2 }}
+              >
+                Previous
+              </Button>
+
+              <Typography component="span" fontWeight="bold">
+                Page {page}
+              </Typography>
+
+              <Button
+                onClick={() => setPage((p) => p + 1)}
+                disabled={!hasMore}
+                sx={{ ml: 2 }}
+              >
+                Next
+              </Button>
+            </Box>
+          )}
+        </DialogActions>
       </Paper>
-    </Modal>
+    </Dialog>
   );
 }
 

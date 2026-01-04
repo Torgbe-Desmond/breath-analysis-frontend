@@ -27,7 +27,7 @@ export default function App() {
           <Route path="/explore" element={<ExploreLayout />} />
           <Route path="/feedback" element={<Contact />} />
           <Route path="/about" element={<About />} />
-          {/* <Route path="/contribute" element={<ContributeLayout />} /> */}
+          <Route path="/contribute" element={<ContributeLayout />} />
           <Route path="/assessment" element={<Assessment />} />
           <Route path="/response/:responseId" element={<SingleResponse />} />
         </Routes>

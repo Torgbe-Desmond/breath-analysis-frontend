@@ -12,7 +12,7 @@ export default function Header() {
 
   return (
     <header className="header">
-      <h2 className="logo">BadBreath</h2>
+      <h2 className="logo">Breath Analysis</h2>
 
       <nav className={`nav ${isMobileMenuOpen ? "open" : ""}`}>
         <NavLink to="/" end onClick={() => setIsMobileMenuOpen(false)}>

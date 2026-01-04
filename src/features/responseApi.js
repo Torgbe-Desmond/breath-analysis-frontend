@@ -45,6 +45,15 @@ export const responseApi = createApi({
       providesTags: ["Response"],
     }),
 
+    // ================= DOWNLOAD RESPONSE  =================
+    getResponseJson: builder.query({
+      query: ({ responseId }) => ({
+        url: `/responses/download/${responseId}`,
+        method: "GET",
+      }),
+      providesTags: ["Response"],
+    }),
+
     // ================= GET ALL RESPONSES =================
     getAllResponses: builder.query({
       query: () => ({
@@ -84,4 +93,5 @@ export const {
   useGetResponsesByValueQuery,
   useLazyGetResponsesByValueQuery,
   useGetResponseByIdQuery,
+  useGetResponseJsonQuery,
 } = responseApi;
