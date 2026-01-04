@@ -34,7 +34,7 @@ export default function JsonPreviewModal({ open, onClose, jsonData }) {
             p: 2,
             borderRadius: 1,
             maxHeight: 400,
-            width: { xs: 350, sm: 500 },
+            // width: { xs: 350, sm: 500 },
             overflow: "auto",
             fontSize: "0.85rem",
           }}
