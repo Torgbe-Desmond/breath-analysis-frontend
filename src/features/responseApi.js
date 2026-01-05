@@ -65,10 +65,10 @@ export const responseApi = createApi({
 
     // ================= SEARCH RESPONSES BY VALUE =================
     getResponsesByValue: builder.query({
-      query: ({ value, page = 1, limit = 3 }) => ({
+      query: ({ value, categoryId, page = 1, limit = 3 }) => ({
         url: `/responses/search?page=${page}&limit=${limit}`,
         method: "POST",
-        body: { value },
+        body: { value, categoryId },
       }),
       providesTags: ["Response"],
     }),

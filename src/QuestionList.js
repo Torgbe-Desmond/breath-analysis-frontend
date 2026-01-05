@@ -1,7 +1,12 @@
 import { List, ListItem, Typography } from "@mui/material";
 import React from "react";
 
-function QuestionList({ setLoadResponseModalOpen, questions, setSearchValue }) {
+function QuestionList({
+  setLoadResponseModalOpen,
+  questions,
+  setSearchValue,
+  setResTotalPages
+}) {
   const questionCardStyle = {
     border: "1px solid #ddd",
     borderRadius: "8px",
@@ -50,6 +55,7 @@ function QuestionList({ setLoadResponseModalOpen, questions, setSearchValue }) {
                     onClick={() => {
                       setLoadResponseModalOpen(true);
                       setSearchValue(opt);
+                      setResTotalPages(q.answers[opt] || 0)
                     }}
                   >
                     <span style={{ textDecoration: "underline" }}>{opt}</span>

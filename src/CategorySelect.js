@@ -1,4 +1,10 @@
-import { FormControl, IconButton, InputLabel, MenuItem, Select } from "@mui/material";
+import {
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import React from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import ReplayIcon from "@mui/icons-material/Replay";
@@ -17,21 +23,6 @@ function CategorySelect({
   return (
     <div>
       <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-        {/* <select
-          value={selectedCategory}
-          onChange={handleCategoryChange}
-          style={selectStyle}
-        >
-          <option value="">
-            {catIsFetching ? "Loading categories..." : "Select a category"}
-          </option>
-          {categories?.map((cat) => (
-            <option key={cat._id} value={cat._id}>
-              {cat.name}
-            </option>
-          ))}
-        </select> */}
-
         <FormControl fullWidth size="small">
           <InputLabel id="category-select-label">Category</InputLabel>
 
@@ -58,9 +49,11 @@ function CategorySelect({
             <ReplayIcon />
           </IconButton>
         ) : (
-          <IconButton onClick={handleClearCategory}>
-            <ClearIcon />
-          </IconButton>
+          selectedCategory && (
+            <IconButton onClick={handleClearCategory}>
+              <ClearIcon />
+            </IconButton>
+          )
         )}
       </div>
     </div>

@@ -14,6 +14,7 @@ import {
   IconButton,
   Paper,
   Skeleton,
+  Tooltip,
   Typography,
   useTheme,
 } from "@mui/material";
@@ -181,6 +182,14 @@ export default function Assessment() {
     }
   };
 
+  const clearSelected = (questionId) => {
+    setAnswers((prev) => {
+      const updated = { ...prev };
+      delete updated[questionId];
+      return updated;
+    });
+  };
+
   // ================= RENDER INPUT =================
   const renderInput = (q) => {
     const value = answers[q._id] || "";
@@ -312,6 +321,26 @@ export default function Assessment() {
               <strong>{q.label}</strong>
             </label>
             <div className="assessment-input-block">{renderInput(q)}</div>
+            <div
+              style={{
+                display: "flex",
+                width: "100%",
+                justifyContent: "flex-end",
+              }}
+            >
+              {answers[q._id] && (
+                <Tooltip title="Clear">
+                  {" "}
+                  <IconButton
+                    onClick={() => {
+                      clearSelected(q._id);
+                    }}
+                  >
+                    <ClearIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </div>
           </div>
         ))}
       </form>

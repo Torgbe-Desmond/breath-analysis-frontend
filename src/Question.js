@@ -14,9 +14,7 @@ function Question({
   handleExpand,
 }) {
   return (
-    <div
-      
-    >
+    <div>
       <div key={question._id} className="question-card">
         <div className="question-header">
           <IconButton onClick={() => handleExpand(question._id)}>
@@ -34,7 +32,7 @@ function Question({
             <IconButton onClick={() => handleOpenDeleteModal(question._id)}>
               <DeleteIcon />
             </IconButton>
-          </div>  
+          </div>
         </div>
 
         {expanded === question._id && (
@@ -42,7 +40,6 @@ function Question({
             {question.options.length > 0 ? (
               question.options.map((opt, idx) => (
                 <div className="option" key={idx}>
-                  {" "}
                   {opt}
                 </div>
               ))

@@ -10,8 +10,8 @@ export const feedbackApi = createApi({
   tagTypes: ["Feedback"],
   endpoints: (builder) => ({
     handleGetFeedbacks: builder.query({
-      query: () => ({
-        url: "/feedbacks",
+      query: ({ page, limit }) => ({
+        url: `/feedbacks?page=${page}&limit=${limit}`,
         method: "GET",
       }),
       providesTags: ["Feedback"],

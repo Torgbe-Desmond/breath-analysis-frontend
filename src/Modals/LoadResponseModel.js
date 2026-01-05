@@ -15,14 +15,20 @@ import { Link } from "react-router-dom";
 import { useGetResponsesByValueQuery } from "../features/responseApi";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import Pagination from "../Pagination";
 
 function LoadResponseModel({
   loadResponseModalOpen,
   setLoadResponseModalOpen,
   searchValue,
+  selectedCategory,
+  resTotalPages,
 }) {
   const [page, setPage] = useState(1);
-  const [limit] = useState(10);
+  const [limit] = useState(5);
+  const [hasMore, setHasMore] = useState(false);
+  const [totalPages, setTotalPages] = useState(0);
+  const [results, setResults] = useState([]);
 
   // Use RTK Query directly to fetch paginated responses
   const {
@@ -30,19 +36,43 @@ function LoadResponseModel({
     isFetching,
     refetch,
   } = useGetResponsesByValueQuery(
-    { value: searchValue, page, limit },
+    { value: searchValue, categoryId: selectedCategory, page, limit },
     {
       skip: !searchValue, // Skip query if search is empty
     }
   );
+
+  console.log("resTotalPages", resTotalPages);
+
+  useEffect(() => {
+    let results = responseData?.data.results || [];
+    setResults(results);
+    setHasMore(responseData?.data.hasMore || false);
+    setTotalPages(resTotalPages);
+
+    return () => {
+      setResults([]);
+      setHasMore(false);
+      setTotalPages(0);
+    };
+  }, [responseData]);
 
   // Reset page to 1 whenever search value changes
   useEffect(() => {
     setPage(1);
   }, [searchValue]);
 
-  const results = responseData?.data.results || [];
-  const hasMore = responseData?.data.hasMore || false;
+  const handlePrevPage = () => {
+    setPage((p) => Math.max(p - 1, 1));
+  };
+
+  const handleNextPage = (nextPage) => {
+    if (typeof nextPage === "number") {
+      setPage(nextPage);
+    } else {
+      setPage((p) => p + 1);
+    }
+  };
 
   return (
     <Dialog
@@ -113,37 +143,22 @@ function LoadResponseModel({
           )}
         </DialogContent>
 
-        <DialogActions alignItems="center">
+        <DialogActions
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           {results.length > 0 && (
-            <Box
-              textAlign="center"
-              sx={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <IconButton
-                onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                disabled={page === 1}
-                sx={{ mr: 2 }}
-              >
-                <ArrowBackIosIcon />
-              </IconButton>
-
-              <Typography component="span" fontWeight="bold">
-                Page {page}
-              </Typography>
-
-              <IconButton
-                onClick={() => setPage((p) => p + 1)}
-                disabled={!hasMore}
-                sx={{ ml: 2 }}
-              >
-                <ArrowForwardIosIcon />
-              </IconButton>
-            </Box>
+            <Pagination
+              page={page}
+              limit={limit}
+              totalPages={resTotalPages}
+              hasMore={hasMore}
+              handlePrevPage={handlePrevPage}
+              handleNextPage={handleNextPage}
+            />
           )}
         </DialogActions>
       </Paper>

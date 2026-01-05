@@ -29,6 +29,10 @@ export default function AddQuestionModals({
     };
 
     let old = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (!old) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([draft]));
+    }
+
     localStorage.setItem(STORAGE_KEY, JSON.stringify([...old, draft]));
 
     // setDrafts((prev) => [...prev, draft]);

@@ -5,6 +5,8 @@ import Contribute from "../pages/Contribute";
 import Questions from "../Questions";
 import { useHandleGetCategoriesQuery } from "../features/categoryApi";
 import { useHandleGetDashboardQuestionsQuery } from "../features/questionApi";
+import { useHandleGetFeedbacksQuery } from "../features/feedbackApi";
+import Feedback from "../Feedback";
 
 // ---------------- TAB PANEL HELPER ----------------
 function TabPanel({ children, value, index }) {
@@ -31,6 +33,13 @@ export default function ContributeLayout() {
   const [loadingQuestions, setLoadingQuestions] = useState(false);
   const [questionsError, setQuestionsError] = useState(false);
   const [questionsSuccess, setQuestionsSuccess] = useState(false);
+
+  const { data, isLoading, isError } = useHandleGetFeedbacksQuery({
+    page: 1,
+    limit: 10,
+  });
+
+  const feedbacks = data?.data?.results || [];
 
   // ================= CATEGORIES =================
   const {
@@ -86,10 +95,6 @@ export default function ContributeLayout() {
   // ================= JSX =================
   return (
     <Box sx={{ maxWidth: "1000px", mx: "auto", mt: 4, p: 2 }}>
-      <Typography variant="h5" fontWeight={600} gutterBottom>
-        Contribute
-      </Typography>
-
       {/* ---------- TABS ---------- */}
       <Tabs
         value={tab}
@@ -122,9 +127,7 @@ export default function ContributeLayout() {
       </TabPanel>
 
       <TabPanel value={tab} index={2}>
-        <Typography color="text.secondary">
-          Feedbacks will appear here.
-        </Typography>
+        <Feedback />
       </TabPanel>
     </Box>
   );

@@ -1,10 +1,14 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import Header from "../Header";
 
 function AppLayout() {
   return (
     <div>
-      <Outlet />
+      <Header />
+      <div className="container">
+        <Outlet />
+      </div>
     </div>
   );
 }

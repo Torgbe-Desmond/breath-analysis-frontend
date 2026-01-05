@@ -81,7 +81,6 @@ export default function Questions({
   };
 
   const handleOpenDeleteModal = (q) => {
-    console.log("delete", q);
     setQuestionToDelete(q);
     setDeleteModalOpen(true);
   };

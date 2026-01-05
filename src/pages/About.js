@@ -3,9 +3,8 @@ import "../App.css";
 export default function About() {
   return (
     <Paper gap={1} className="box">
-      <Typography variant="h1" fontWeight={600}>
-        About This Project
-      </Typography>
+      <h3 className="assessment-title">About This Project</h3>
+
       <Typography>
         Bad breath, also known as halitosis, is a common but often misunderstood
         condition. While it’s frequently treated as a simple hygiene issue,
@@ -17,7 +16,9 @@ export default function About() {
         Bad Breath Analysis was created to help bring clarity to this problem
         through structured data, honest self-reporting, and meaningful insights.
       </Typography>
-      <Typography>Our goal is not to diagnose, but to identify patterns.</Typography>
+      <Typography>
+        Our goal is not to diagnose, but to identify patterns.
+      </Typography>
     </Paper>
   );
 }

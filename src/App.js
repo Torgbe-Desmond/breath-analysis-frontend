@@ -1,16 +1,15 @@
-import { Routes, Route } from "react-router-dom";
-import Header from "./Header";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useEffect } from "react";
+
+import "./App.css";
+
+import AppLayout from "./layout/AppLayout";
 import Home from "./pages/Home";
 import About from "./pages/About";
-import "./App.css";
-import ContributeLayout from "./layout/ContributeLayout";
 import ExploreLayout from "./layout/ExploreLayout";
 import Assessment from "./pages/Assessment";
-import Stories from "./pages/Stories";
 import SingleResponse from "./pages/SingleResponse";
 import Contact from "./pages/Contact";
-import { useEffect } from "react";
-import Login from "./pages/Login";
 
 export default function App() {
   useEffect(() => {
@@ -19,20 +18,22 @@ export default function App() {
       themeColorMeta.setAttribute("content", "#ffffff");
     }
   }, []);
+
   return (
-    <>
-      <Header />
-      <main className="container">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/explore" element={<ExploreLayout />} />
-          <Route path="/feedback" element={<Contact />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/assessment" element={<Assessment />} />
-          <Route path="/response/:responseId" element={<SingleResponse />} />
-          <Route path="*" element={<Home />} />
-        </Routes>
-      </main>
-    </>
+    <main>
+      <Routes>
+        <Route path="/" element={<AppLayout />}>
+          <Route index element={<Home />} />
+          <Route path="explore" element={<ExploreLayout />} />
+          <Route path="feedback" element={<Contact />} />
+          <Route path="about" element={<About />} />
+          <Route path="assessment" element={<Assessment />} />
+          <Route path="response/:responseId" element={<SingleResponse />} />
+        </Route>
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </main>
   );
 }

@@ -17,12 +17,11 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-
 }
 
 /* ================= HEADINGS ================= */
 .assessment-title {
-    font-size: 1.8rem;
+    font-size: 1.4rem;
     color: #1d4ed8;
     margin-bottom: 1rem;
 }

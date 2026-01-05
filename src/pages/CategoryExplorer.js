@@ -10,8 +10,7 @@ import CategorySelect from "../CategorySelect";
 import Loader from "../Loader";
 import QuestionList from "../QuestionList";
 import Pagination from "../Pagination";
-
-
+import { SignalCellularNullRounded } from "@mui/icons-material";
 
 const PAGE_LIMIT = 3;
 
@@ -23,6 +22,8 @@ export default function CategoryExplorer() {
 
   const [questions, setQuestions] = useState([]);
   const [hasMore, setHasMore] = useState(false);
+  const [totalPages, setTotalPages] = useState(null);
+  const [resTotalPages, setResTotalPages] = useState(0);
 
   // Status states
   const [loadingCategories, setLoadingCategories] = useState(false);
@@ -65,6 +66,8 @@ export default function CategoryExplorer() {
       : skipToken
   );
 
+  console.log("questionData", questionData);
+
   useEffect(() => {
     setIsFetchingQuestions(qFetching);
     setLoadingQuestions(qLoading);
@@ -76,6 +79,7 @@ export default function CategoryExplorer() {
       : questionData?.data?.questions || [];
     setQuestions(fetchedQuestions);
     setHasMore(questionData?.data?.hasMore ?? false);
+    setTotalPages(questionData?.data?.totalQuestions);
   }, [questionData, qLoading, qError, isSuccess, qFetching]);
 
   /* ================= HANDLERS ================= */
@@ -109,6 +113,7 @@ export default function CategoryExplorer() {
     questions,
     setLoadResponseModalOpen,
     setSearchValue,
+    setResTotalPages,
   };
 
   const paginationProps = {
@@ -116,6 +121,8 @@ export default function CategoryExplorer() {
     hasMore,
     handlePrevPage,
     handleNextPage,
+    totalPages,
+    limit: PAGE_LIMIT,
   };
 
   return (
@@ -160,6 +167,8 @@ export default function CategoryExplorer() {
         loadResponseModalOpen={loadResponseModalOpen}
         setLoadResponseModalOpen={setLoadResponseModalOpen}
         searchValue={searchValue}
+        selectedCategory={selectedCategory}
+        resTotalPages={resTotalPages}
       />
     </Paper>
   );
