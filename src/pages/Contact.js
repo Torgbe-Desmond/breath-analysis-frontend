@@ -6,6 +6,7 @@ import {
   Alert,
   Typography,
   Paper,
+  TextField,
 } from "@mui/material";
 import "./Contribute.css";
 import { useHandleCreateFeedbackMutation } from "../features/feedbackApi";
@@ -42,38 +43,38 @@ function Contact() {
 
   return (
     <Paper
-      className="contribute-container"
+      className="box"
       sx={{
         maxWidth: 600,
         mx: "auto",
         mt: 6,
-        p: 3,
+        // p: 3,
         display: "flex",
         flexDirection: "column",
         gap: 2,
       }}
     >
-      <Typography color="text.secondary">
+      <Typography>
         Share your feedback, suggestions, or thoughts about the Bad Breath
         Analysis platform. Your feedback helps improve the experience.
       </Typography>
 
-      <textarea
+      <TextField
         placeholder="Your feedback"
         rows={5}
+        multiline
         value={feedback}
         style={{
           width: "100%",
-          padding: "10px",
+          // padding: "10px",
           fontSize: "16px",
           borderRadius: "6px",
-          border: "1px solid #ccc",
+          // border: "1px solid #ccc",
         }}
         onChange={(e) => setFeedback(e.target.value)}
       />
 
       <Button
-        className="assessment-btn"
         variant="contained"
         onClick={handleSubmit}
         disabled={isLoading}

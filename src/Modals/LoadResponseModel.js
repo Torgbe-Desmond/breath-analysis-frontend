@@ -13,8 +13,6 @@ import {
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useGetResponsesByValueQuery } from "../features/responseApi";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Pagination from "../Pagination";
 
 function LoadResponseModel({
@@ -23,6 +21,8 @@ function LoadResponseModel({
   searchValue,
   selectedCategory,
   resTotalPages,
+  questionLabel,
+  questionId,
 }) {
   const [page, setPage] = useState(1);
   const [limit] = useState(5);
@@ -36,13 +36,17 @@ function LoadResponseModel({
     isFetching,
     refetch,
   } = useGetResponsesByValueQuery(
-    { value: searchValue, categoryId: selectedCategory, page, limit },
+    {
+      value: searchValue,
+      categoryId: selectedCategory,
+      questionId,
+      page,
+      limit,
+    },
     {
       skip: !searchValue, // Skip query if search is empty
     }
   );
-
-  console.log("resTotalPages", resTotalPages);
 
   useEffect(() => {
     let results = responseData?.data.results || [];
@@ -62,15 +66,15 @@ function LoadResponseModel({
     setPage(1);
   }, [searchValue]);
 
-  const handlePrevPage = () => {
-    setPage((p) => Math.max(p - 1, 1));
+  const handlePrevPage = (nextPage) => {
+    if (typeof nextPage === "number") {
+      setPage(nextPage);
+    }
   };
 
   const handleNextPage = (nextPage) => {
     if (typeof nextPage === "number") {
       setPage(nextPage);
-    } else {
-      setPage((p) => p + 1);
     }
   };
 
@@ -92,17 +96,7 @@ function LoadResponseModel({
           gap: 3,
         }}
       >
-        <DialogTitle
-          className="assessment-title"
-          variant="h5"
-          fontWeight="bold"
-          textAlign="flex-start"
-        >
-          Responses
-        </DialogTitle>
-
-        <Alert severity="info">These are real life experiences of people</Alert>
-
+        <Typography>{questionLabel}</Typography>
         <DialogContent dividers>
           {isFetching ? (
             <Typography align="center">Loading...</Typography>

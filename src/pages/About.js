@@ -3,8 +3,6 @@ import "../App.css";
 export default function About() {
   return (
     <Paper gap={1} className="box">
-      <h3 className="assessment-title">About This Project</h3>
-
       <Typography>
         Bad breath, also known as halitosis, is a common but often misunderstood
         condition. While it’s frequently treated as a simple hygiene issue,

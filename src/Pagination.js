@@ -1,4 +1,4 @@
-import { Button, IconButton } from "@mui/material";
+import { Button, IconButton, List, ListItem } from "@mui/material";
 import React from "react";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -45,7 +45,7 @@ function Pagination({
         </IconButton>
 
         {/* PAGE NUMBERS */}
-        <ul
+        <List
           style={{
             listStyle: "none",
             display: "flex",
@@ -56,24 +56,24 @@ function Pagination({
           }}
         >
           {PageNumbersArray(totalPages).map((p) => (
-            <li
+            <ListItem
               key={p}
               onClick={() => p !== page && handleNextPage(p)}
-              style={{
+              sx={{
                 cursor: p === page ? "default" : "pointer",
                 padding: "6px 10px",
                 borderRadius: 6,
                 fontWeight: p === page ? "bold" : "normal",
-                backgroundColor: p === page ? "#1976d2" : "transparent",
-                color: p === page ? "#fff" : "#1976d2",
-                border: "1px solid #1976d2",
+                backgroundColor: p === page ? "primary.main" : "transparent",
+                color: p === page ? "#fff" : "primary.main",
+                border: "1px solid primary.main",
                 opacity: p === page ? 1 : 0.8,
               }}
             >
               {p}
-            </li>
+            </ListItem>
           ))}
-        </ul>
+        </List>
 
         {/* NEXT */}
         <Button

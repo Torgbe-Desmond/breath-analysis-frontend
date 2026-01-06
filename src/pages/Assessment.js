@@ -10,10 +10,16 @@ import AlertInfo from "../AlertInfo";
 import {
   Alert,
   Button,
+  Checkbox,
   CircularProgress,
+  FormControlLabel,
+  FormGroup,
   IconButton,
   Paper,
+  Radio,
+  RadioGroup,
   Skeleton,
+  TextField,
   Tooltip,
   Typography,
   useTheme,
@@ -40,6 +46,7 @@ const emailSchema = Yup.object({
 export default function Assessment() {
   const [answers, setAnswers] = useState({});
   const [existingResponseId, setExistingResponseId] = useState(null);
+  const theme = useTheme();
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -168,7 +175,6 @@ export default function Assessment() {
         showSuccess("Response updated successfully");
         window.location.reload();
       } else {
-        console.log("formattedAnswers", formattedAnswers);
         await createResponse({
           answers: formattedAnswers,
           email,
@@ -196,38 +202,47 @@ export default function Assessment() {
     switch (q.type) {
       case "textarea":
         return (
-          <textarea
+          <TextField
+            fullWidth
+            multiline
             rows={3}
             value={value}
             onChange={(e) => handleChange(q._id, e.target.value, "textarea")}
           />
         );
       case "radio":
-        return q.options.map((opt) => (
-          <label className="label" key={opt}>
-            {" "}
-            <input
-              type="radio"
-              name={q._id}
-              checked={value === opt}
-              onChange={() => handleChange(q._id, opt, "radio")}
-            />
-            <span>{opt}</span>
-          </label>
-        ));
+        return (
+          <RadioGroup value={value}>
+            {q.options.map((opt) => (
+              <FormControlLabel
+                key={opt}
+                value={opt}
+                control={<Radio />}
+                label={opt}
+                onChange={() => handleChange(q._id, opt, "radio")}
+              />
+            ))}
+          </RadioGroup>
+        );
       case "checkbox":
-        return q.options.map((opt) => (
-          <label className="label" key={opt}>
-            <input
-              type="checkbox"
-              checked={Array.isArray(value) && value.includes(opt)}
-              onChange={(e) =>
-                handleChange(q._id, opt, "checkbox", e.target.checked)
-              }
-            />
-            <span>{opt}</span>
-          </label>
-        ));
+        return (
+          <FormGroup>
+            {q.options.map((opt) => (
+              <FormControlLabel
+                key={opt}
+                control={
+                  <Checkbox
+                    checked={Array.isArray(value) && value.includes(opt)}
+                    onChange={(e) =>
+                      handleChange(q._id, opt, "checkbox", e.target.checked)
+                    }
+                  />
+                }
+                label={opt}
+              />
+            ))}
+          </FormGroup>
+        );
       case "dropdown":
         return (
           <select
@@ -237,7 +252,7 @@ export default function Assessment() {
             <option value="">Select</option>
             {q.options.map((opt) => (
               <option key={opt} value={opt}>
-                <span>{opt}</span>
+                <Typography color="text.secondary">{opt}</Typography>
               </option>
             ))}
           </select>
@@ -283,7 +298,6 @@ export default function Assessment() {
           }}
         >
           <Button
-            className="assessment-btn"
             onClick={Reload}
             variant="contained"
             color="primary"
@@ -296,16 +310,22 @@ export default function Assessment() {
 
   return (
     <Paper className="assessment-container">
-      <h3 className="assessment-title">Assessment</h3>
-      <p>
-        Enter your email to continue a previous assessment or submit a new one.
-      </p>
-
       <form className="assessment-form">
+        {/* <h3 className="assessment-title">Assessment</h3> */}
+        <Typography>
+          Enter your email to continue a previous assessment or submit a new
+          one.
+        </Typography>
         <div>
-          <input
+          <TextField
             type="email"
             name="email"
+            sx={{
+              "& .MuiInputBase-input":{
+                height:"35px",
+                width:"100%"
+              }
+            }}
             value={formik.values.email}
             placeholder="Enter your email"
             onChange={formik.handleChange}
@@ -316,7 +336,13 @@ export default function Assessment() {
           <Alert severity="error"> {formik.errors.email}</Alert>
         )}
         {questions.map((q) => (
-          <div key={q._id} className="assessment-question">
+          <div
+            style={{
+              backgroundColor: theme.palette.background.paper,
+            }}
+            key={q._id}
+            className="assessment-question"
+          >
             <label>
               <strong>{q.label}</strong>
             </label>
@@ -352,7 +378,6 @@ export default function Assessment() {
           disabled={loadingSubmit}
           variant="contained"
           color="primary"
-          className="assessment-btn"
         >
           {loadingSubmit
             ? "Submitting..."

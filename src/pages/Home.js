@@ -108,7 +108,7 @@ export default function Home() {
 
       <section className="action-buttons">
         <Button
-          className="btn"
+          // className="btn"
           variant="contained"
           onClick={() => navigate("/explore")}
         >
@@ -118,7 +118,7 @@ export default function Home() {
         <Button
           variant="contained"
           onClick={() => navigate("/assessment")}
-          className="btn"
+          // className="btn"
         >
           Assess your status
         </Button>

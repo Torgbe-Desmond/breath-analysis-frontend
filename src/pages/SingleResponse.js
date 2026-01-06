@@ -45,7 +45,6 @@ function SingleResponse() {
     setOpen(true);
   };
 
-  console.log("jsonData", responseData);
 
   useEffect(() => {
     const fetchResponse = async () => {

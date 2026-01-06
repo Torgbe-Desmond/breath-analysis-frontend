@@ -4,6 +4,7 @@ export const AppLightTheme = createTheme({
     mode: "light",
     primary: {
       main: "#1976d2",
+      header: "#FFFF",
       contrastText: "#ffffff",
     },
     background: {
@@ -13,6 +14,7 @@ export const AppLightTheme = createTheme({
     text: {
       primary: "#1a1a1a",
       secondary: "#4f4f4f",
+      tertiary: "#FFF",
     },
   },
   components: {
@@ -41,11 +43,54 @@ export const AppLightTheme = createTheme({
   },
 });
 
+export const AppDarkTheme = createTheme({
+  palette: {
+    mode: "dark",
+    primary: {
+      main: "#90caf9", // soft blue, readable on dark
+      contrastText: "#0d1117",
+    },
+    background: {
+      default: "#0d1117", // dark gray-blue (GitHub style)
+      paper: "#161b22", // slightly lifted surfaces
+    },
+    text: {
+      primary: "#e6edf3",
+      secondary: "#9ba3af",
+    },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          textTransform: "none",
+          fontWeight: 600,
+        },
+        containedPrimary: {
+          backgroundColor: "#90caf9",
+          color: "#0d1117",
+          "&:hover": {
+            backgroundColor: "#64b5f6",
+          },
+        },
+        outlinedPrimary: {
+          borderColor: "#90caf9",
+          color: "#90caf9",
+        },
+        textPrimary: {
+          color: "#90caf9",
+        },
+      },
+    },
+  },
+});
+
 export const MintGreenTheme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#2e7d32",
+      main: "#618a63ff",
       contrastText: "#ffffff",
     },
     background: {
@@ -64,9 +109,10 @@ export const MintGreenTheme = createTheme({
           borderRadius: 8,
           textTransform: "none",
           fontWeight: 600,
+          padding: 15,
         },
         containedPrimary: {
-          backgroundColor: "#2e7d32",
+          backgroundColor: "#618a63ff",
           "&:hover": {
             backgroundColor: "#1b5e20",
           },
@@ -82,7 +128,6 @@ export const MintGreenTheme = createTheme({
     },
   },
 });
-
 
 export const SoftPinkTheme = createTheme({
   palette: {
@@ -125,7 +170,6 @@ export const SoftPinkTheme = createTheme({
     },
   },
 });
-
 
 export const WarmBeigeTheme = createTheme({
   palette: {
@@ -178,7 +222,7 @@ export const SoftDarkTheme = createTheme({
     },
     background: {
       default: "#121826",
-      paper: "#1c2233",
+      paper: "#22293aff",
     },
     text: {
       primary: "#eaeaea",
@@ -195,7 +239,7 @@ export const SoftDarkTheme = createTheme({
         },
         containedPrimary: {
           backgroundColor: "#90caf9",
-          color: "#0f172a",
+          color: "#3f4147ff",
           "&:hover": {
             backgroundColor: "#64b5f6",
           },
@@ -211,7 +255,6 @@ export const SoftDarkTheme = createTheme({
     },
   },
 });
-
 
 export const LightYellowTheme = createTheme({
   palette: {

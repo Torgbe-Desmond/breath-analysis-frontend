@@ -10,7 +10,7 @@ export const questionApi = createApi({
   tagTypes: ["Question"],
   endpoints: (builder) => ({
     getQuestionsByCategory: builder.query({
-      query: ({ categoryId, page = 1, limit = 3 }) => ({
+      query: ({ categoryId, page = 1 , limit = 3 }) => ({
         url: `/questions/${categoryId}/insights?page=${page}&limit=${limit}`,
         method: "GET",
       }),

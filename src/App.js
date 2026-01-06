@@ -10,14 +10,16 @@ import ExploreLayout from "./layout/ExploreLayout";
 import Assessment from "./pages/Assessment";
 import SingleResponse from "./pages/SingleResponse";
 import Contact from "./pages/Contact";
+import { useTheme } from "@emotion/react";
 
 export default function App() {
+  const theme = useTheme();
   useEffect(() => {
-    const themeColorMeta = document.querySelector("meta[name='theme-color']");
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
     if (themeColorMeta) {
-      themeColorMeta.setAttribute("content", "#ffffff");
+      themeColorMeta.setAttribute("content", theme.palette.primary.main);
     }
-  }, []);
+  }, [theme.palette.primary.main]);
 
   return (
     <main>

@@ -23,8 +23,10 @@ function CategorySelect({
   return (
     <div>
       <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+        {/* <h3 className="assessment-title">Categorized Answers</h3> */}
+
         <FormControl fullWidth size="small">
-          <InputLabel id="category-select-label">Category</InputLabel>
+          <InputLabel id="category-select-label">Select Category</InputLabel>
 
           <Select
             labelId="category-select-label"

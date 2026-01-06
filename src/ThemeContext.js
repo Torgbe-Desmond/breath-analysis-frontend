@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { useMediaQuery, createTheme } from "@mui/material";
 import { ThemeProvider, CssBaseline } from "@mui/material";
-import { AppLightTheme, LightYellowTheme, MintGreenTheme, SoftDarkTheme } from "./Theme";
+import { AppLightTheme, LightYellowTheme, MintGreenTheme, SoftDarkTheme, SoftPinkTheme } from "./Theme";
 
 const ThemeMode = {
   LIGHT: "light",
@@ -27,7 +27,7 @@ export const ThemeProviderWrapper = ({ children }) => {
 
   const theme = useMemo(() => {
     // For now, always light theme
-    return AppLightTheme;
+    return MintGreenTheme;
   }, [themeMode, systemPrefersDark]);
 
   useEffect(() => {

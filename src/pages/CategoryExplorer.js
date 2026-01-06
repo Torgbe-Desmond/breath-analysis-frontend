@@ -19,11 +19,13 @@ export default function CategoryExplorer() {
   const [page, setPage] = useState(1);
   const [loadResponseModalOpen, setLoadResponseModalOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [questionLabel, setQuestionLabel] = useState("");
 
   const [questions, setQuestions] = useState([]);
   const [hasMore, setHasMore] = useState(false);
   const [totalPages, setTotalPages] = useState(null);
   const [resTotalPages, setResTotalPages] = useState(0);
+  const [questionId, setQuestionId] = useState("");
 
   // Status states
   const [loadingCategories, setLoadingCategories] = useState(false);
@@ -66,8 +68,6 @@ export default function CategoryExplorer() {
       : skipToken
   );
 
-  console.log("questionData", questionData);
-
   useEffect(() => {
     setIsFetchingQuestions(qFetching);
     setLoadingQuestions(qLoading);
@@ -94,8 +94,17 @@ export default function CategoryExplorer() {
     setQuestions([]);
   };
 
-  const handlePrevPage = () => setPage((p) => Math.max(p - 1, 1));
-  const handleNextPage = () => setPage((p) => (hasMore ? p + 1 : p));
+  const handlePrevPage = (nextPage) => {
+    if (typeof nextPage === "number") {
+      setPage(nextPage);
+    }
+  };
+
+  const handleNextPage = (nextPage) => {
+    if (typeof nextPage === "number") {
+      setPage(nextPage);
+    }
+  };
 
   /* ================= PROPS ================= */
   const categoryProps = {
@@ -114,6 +123,8 @@ export default function CategoryExplorer() {
     setLoadResponseModalOpen,
     setSearchValue,
     setResTotalPages,
+    setQuestionLabel,
+    setQuestionId,
   };
 
   const paginationProps = {
@@ -130,8 +141,6 @@ export default function CategoryExplorer() {
       className="assessment-container"
       style={{ maxWidth: 800, margin: "20px auto" }}
     >
-      <h3 className="assessment-title">Categorized Answers</h3>
-
       {/* Category selection */}
       <CategorySelect {...categoryProps} />
 
@@ -169,6 +178,8 @@ export default function CategoryExplorer() {
         searchValue={searchValue}
         selectedCategory={selectedCategory}
         resTotalPages={resTotalPages}
+        questionId={questionId}
+        questionLabel={questionLabel}
       />
     </Paper>
   );
