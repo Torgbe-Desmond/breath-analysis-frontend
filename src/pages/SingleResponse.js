@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getResponseById } from "../Services/Responses";
 import { useParams } from "react-router-dom";
 import AlertInfo from "../AlertInfo";
-import { Box, Button, Paper, Skeleton } from "@mui/material";
+import { Box, Button, List, ListItem, Paper, Skeleton } from "@mui/material";
 import JsonPreviewModal from "../Modals/JsonPreviewModal";
 import { useGetResponseJsonQuery } from "../features/responseApi";
 
@@ -45,7 +45,6 @@ function SingleResponse() {
     setOpen(true);
   };
 
-
   useEffect(() => {
     const fetchResponse = async () => {
       try {
@@ -86,8 +85,6 @@ function SingleResponse() {
 
   return (
     <Paper className="assessment-container">
-      <h3 className="assessment-title">Response</h3>
-
       {loading && <p style={{ textAlign: "center" }}>Loading response...</p>}
 
       <form className="assessment-form">
@@ -142,11 +139,7 @@ function SingleResponse() {
 
         <Box>
           {showButton && (
-            <Button
-              className="assessment-btn"
-              variant="contained"
-              onClick={handleOpen}
-            >
+            <Button variant="contained" onClick={handleOpen}>
               View JSON
             </Button>
           )}
