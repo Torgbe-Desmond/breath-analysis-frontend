@@ -240,7 +240,6 @@ export default function Assessment() {
 
         showSuccess("Response submitted successfully");
         handleNextPageButton();
-        // window.location.reload();
       }
     } catch (error) {
       console.log(error);
@@ -487,7 +486,7 @@ export default function Assessment() {
             disabled={loadingSubmit}
             variant="contained"
           >
-            {loadingSubmit ? "Submitting..." : "Save anc continue"}
+            {loadingSubmit ? "Submitting..." : "Save and continue"}
           </Button>
         )}
       </div>
