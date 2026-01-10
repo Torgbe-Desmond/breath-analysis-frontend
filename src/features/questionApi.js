@@ -18,8 +18,8 @@ export const questionApi = createApi({
     }),
 
     handleGetQuestions: builder.query({
-      query: () => ({
-        url: "/questions",
+      query: ({page = 1, limit = 5 }) => ({
+        url: `/questions?page=${page}&limit=${limit}`,
         method: "GET",
       }),
       providesTags: ["Question"],

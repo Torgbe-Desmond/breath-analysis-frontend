@@ -106,6 +106,15 @@ export default function CategoryExplorer() {
     }
   };
 
+    const handleNextPageButton = () => {
+    setPage((prev) => prev + 1);
+  };
+
+  const handlePrevPageButton = () => {
+    setPage((prev) => prev - 1);
+  };
+
+
   /* ================= PROPS ================= */
   const categoryProps = {
     selectedCategory,
@@ -132,6 +141,8 @@ export default function CategoryExplorer() {
     hasMore,
     handlePrevPage,
     handleNextPage,
+    handleNextPageButton,
+    handlePrevPageButton,
     totalPages,
     limit: PAGE_LIMIT,
   };

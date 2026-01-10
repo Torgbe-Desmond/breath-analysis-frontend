@@ -9,6 +9,7 @@ import {
 import AlertInfo from "../AlertInfo";
 import {
   Alert,
+  Box,
   Button,
   Checkbox,
   CircularProgress,
@@ -19,6 +20,8 @@ import {
   Radio,
   RadioGroup,
   Skeleton,
+  Tab,
+  Tabs,
   TextField,
   Tooltip,
   Typography,
@@ -36,6 +39,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import "./Assessment.css";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import Pagination from "../Pagination";
 
 const emailSchema = Yup.object({
   email: Yup.string()
@@ -43,10 +47,24 @@ const emailSchema = Yup.object({
     .required("Email is required"),
 });
 
+function TabPanel({ value, index, children }) {
+  return (
+    <div hidden={value !== index}>
+      {value === index && <Box sx={{ pt: 2 }}>{children}</Box>}
+    </div>
+  );
+}
+
 export default function Assessment() {
   const [answers, setAnswers] = useState({});
   const [existingResponseId, setExistingResponseId] = useState(null);
   const theme = useTheme();
+  const [tab, setTab] = useState(0);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(5);
+  const [hasMore, setHasMore] = useState(false);
+  const [questions, setQuestions] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
 
   const [snackbar, setSnackbar] = useState({
     open: false,
@@ -73,9 +91,23 @@ export default function Assessment() {
     isError: isQuestionsError,
     isFetching,
     refetch,
-  } = useHandleGetQuestionsQuery();
+  } = useHandleGetQuestionsQuery({
+    page,
+    limit,
+  });
 
-  const questions = questionsData?.data || [];
+  useEffect(() => {
+    let results = questionsData?.data.questions || [];
+    setQuestions(results);
+    setHasMore(questionsData?.data.hasMore || false);
+    setTotalPages(questionsData?.data.totalQuestions || 0);
+
+    return () => {
+      setHasMore([]);
+      setHasMore(false);
+      setTotalPages(0);
+    };
+  }, [questionsData]);
 
   // Existing response (email dependent)
   const { data: existingResponse } = useGetResponseByEmailQuery(
@@ -103,10 +135,16 @@ export default function Assessment() {
     const { _id, answers } = existingResponse.data;
     setExistingResponseId(_id);
 
-    const mapped = {};
+    console.log("answers", answers.length);
+
+    // Use Map to ensure uniqueness by questionId
+    const map = new Map();
     answers.forEach((a) => {
-      mapped[a.questionId] = a.value;
+      map.set(a.questionId.toString(), a.value); // key = questionId, value = answer
     });
+
+    // Convert back to object for local state
+    const mapped = Object.fromEntries(map);
     setAnswers(mapped);
   }, [existingResponse]);
 
@@ -142,7 +180,25 @@ export default function Assessment() {
       return updated;
     });
   };
+  const handlePrevPage = (nextPage) => {
+    if (typeof nextPage === "number") {
+      setPage(nextPage);
+    }
+  };
 
+  const handleNextPage = (nextPage) => {
+    if (typeof nextPage === "number") {
+      setPage(nextPage);
+    }
+  };
+
+  const handleNextPageButton = () => {
+    setPage((prev) => prev + 1);
+  };
+
+  const handlePrevPageButton = () => {
+    setPage((prev) => prev - 1);
+  };
   /* ================= SUBMIT ================= */
 
   const handleSubmit = async () => {
@@ -171,9 +227,11 @@ export default function Assessment() {
           answers: formattedAnswers,
           email,
         }).unwrap();
-
         showSuccess("Response updated successfully");
-        window.location.reload();
+        handleNextPageButton();
+        if (!hasMore) {
+          window.location.reload();
+        }
       } else {
         await createResponse({
           answers: formattedAnswers,
@@ -181,9 +239,11 @@ export default function Assessment() {
         }).unwrap();
 
         showSuccess("Response submitted successfully");
-        window.location.reload();
+        handleNextPageButton();
+        // window.location.reload();
       }
-    } catch {
+    } catch (error) {
+      console.log(error);
       showError("Submission failed");
     }
   };
@@ -297,11 +357,7 @@ export default function Assessment() {
             width: "100%",
           }}
         >
-          <Button
-            onClick={Reload}
-            variant="contained"
-            color="primary"
-          >
+          <Button onClick={Reload} variant="contained" color="primary">
             Reload
           </Button>
         </div>
@@ -310,81 +366,130 @@ export default function Assessment() {
 
   return (
     <Paper className="assessment-container">
-      <form className="assessment-form">
-        {/* <h3 className="assessment-title">Assessment</h3> */}
-        <Typography>
-          Enter your email to continue a previous assessment or submit a new
-          one.
-        </Typography>
-        <div>
-          <TextField
-            type="email"
-            name="email"
-            sx={{
-              "& .MuiInputBase-input":{
-                height:"35px",
-                width:"100%"
-              }
-            }}
-            value={formik.values.email}
-            placeholder="Enter your email"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-          />
-        </div>
-        {formik.touched.email && formik.errors.email && (
-          <Alert severity="error"> {formik.errors.email}</Alert>
-        )}
-        {questions.map((q) => (
-          <div
-            style={{
-              backgroundColor: theme.palette.background.paper,
-            }}
-            key={q._id}
-            className="assessment-question"
-          >
-            <label>
-              <strong>{q.label}</strong>
-            </label>
-            <div className="assessment-input-block">{renderInput(q)}</div>
+      <Typography>
+        Enter your email to continue a previous assessment or submit a new one.
+      </Typography>
+      <div>
+        <TextField
+          type="email"
+          name="email"
+          sx={{
+            "& .MuiInputBase-input": {
+              height: "35px",
+              width: "100%",
+            },
+          }}
+          value={formik.values.email}
+          placeholder="Enter your email"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+        />
+      </div>
+      {formik.touched.email && formik.errors.email && (
+        <Alert severity="error"> {formik.errors.email}</Alert>
+      )}
+
+      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
+        <Tabs value={tab} onChange={(e, v) => setTab(v)}>
+          <Tab label="Questions" />
+          {/* <Tab label="New Questions" /> */}
+        </Tabs>
+      </Box>
+
+      <TabPanel value={tab} index={0}>
+        <form className="assessment-form">
+          {/* <h3 className="assessment-title">Assessment</h3> */}
+
+          {questions.map((q) => (
             <div
               style={{
-                display: "flex",
-                width: "100%",
-                justifyContent: "flex-end",
+                backgroundColor: theme.palette.background.paper,
               }}
+              key={q._id}
+              className="assessment-question"
             >
-              {answers[q._id] && (
-                <Tooltip title="Clear">
-                  {" "}
-                  <IconButton
-                    onClick={() => {
-                      clearSelected(q._id);
-                    }}
-                  >
-                    <ClearIcon />
-                  </IconButton>
-                </Tooltip>
-              )}
+              <label>
+                <strong>{q.label}</strong>
+              </label>
+              <div className="assessment-input-block">{renderInput(q)}</div>
+              <div
+                style={{
+                  display: "flex",
+                  width: "100%",
+                  justifyContent: "flex-end",
+                }}
+              >
+                {answers[q._id] && (
+                  <Tooltip title="Clear">
+                    {" "}
+                    <IconButton
+                      onClick={() => {
+                        clearSelected(q._id);
+                      }}
+                    >
+                      <ClearIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-      </form>
+          ))}
+        </form>
+
+        {questions.length > 0 && (
+          <Pagination
+            page={page}
+            limit={limit}
+            totalPages={totalPages}
+            hasMore={hasMore}
+            handleNextPageButton={handleNextPageButton}
+            handlePrevPageButton={handlePrevPageButton}
+            handlePrevPage={handlePrevPage}
+            handleNextPage={handleNextPage}
+          />
+        )}
+      </TabPanel>
+
+      <TabPanel value={tab} index={1}>
+        <Typography variant="h6">New Questions</Typography>
+        <Typography color="text.secondary">
+          This section is reserved for adding new questions.
+        </Typography>
+
+        <TextField
+          fullWidth
+          label="Question"
+          placeholder="Enter a new question"
+          sx={{ mt: 2 }}
+        />
+
+        <Button sx={{ mt: 2 }} variant="outlined">
+          Add Question
+        </Button>
+      </TabPanel>
 
       <div style={{ marginTop: "1rem" }}>
-        <Button
-          type="button"
-          onClick={handleSubmit}
-          disabled={loadingSubmit}
-          variant="contained"
-          color="primary"
-        >
-          {loadingSubmit
-            ? "Submitting..."
-            : existingResponseId
-            ? "Update Response"
-            : "Submit Response"}
-        </Button>
+        {!hasMore ? (
+          <Button
+            type="button"
+            onClick={handleSubmit}
+            disabled={loadingSubmit}
+            variant="contained"
+            color="primary"
+          >
+            Finished
+          </Button>
+        ) : (
+          <Button
+            onClick={() => {
+              handleSubmit();
+            }}
+            disabled={loadingSubmit}
+            variant="contained"
+          >
+            {loadingSubmit ? "Submitting..." : "Save anc continue"}
+          </Button>
+        )}
       </div>
 
       <AlertInfo
@@ -396,7 +501,7 @@ export default function Assessment() {
 
       {/* Floating counter */}
       <FloatingCounter
-        totalInputs={questions.length}
+        totalInputs={totalPages}
         filledInputs={Object.keys(answers).length}
       />
     </Paper>

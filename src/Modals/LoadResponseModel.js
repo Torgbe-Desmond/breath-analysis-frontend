@@ -78,6 +78,14 @@ function LoadResponseModel({
     }
   };
 
+  const handleNextPageButton = () => {
+    setPage((prev) => prev + 1);
+  };
+
+  const handlePrevPageButton = () => {
+    setPage((prev) => prev - 1);
+  };
+
   return (
     <Dialog
       open={loadResponseModalOpen}
@@ -150,6 +158,8 @@ function LoadResponseModel({
               limit={limit}
               totalPages={resTotalPages}
               hasMore={hasMore}
+              handleNextPageButton={handleNextPageButton}
+              handlePrevPageButton={handlePrevPageButton}
               handlePrevPage={handlePrevPage}
               handleNextPage={handleNextPage}
             />

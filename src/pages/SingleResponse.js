@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getResponseById } from "../Services/Responses";
 import { useParams } from "react-router-dom";
 import AlertInfo from "../AlertInfo";
-import { Box, Button, List, ListItem, Paper, Skeleton } from "@mui/material";
+import { Box, Button, List, ListItem, Paper, Skeleton, useTheme } from "@mui/material";
 import JsonPreviewModal from "../Modals/JsonPreviewModal";
 import { useGetResponseJsonQuery } from "../features/responseApi";
 
@@ -12,6 +12,7 @@ function SingleResponse() {
   const [loading, setLoading] = useState(false);
   const [jsonData, setJsonData] = useState(null);
   const [showButton, setShowButton] = useState(false);
+  const theme = useTheme()
   const [open, setOpen] = useState(false);
   const { id } = useParams();
   const [snackbar, setSnackbar] = useState({

@@ -61,6 +61,16 @@ textarea {
   /* margin-bottom: 1rem; */
 }
 
+.MuiInputBase-root {
+  padding: 0px !important;
+    height:"100px" !important  ;
+
+}
+
+.MuiInputBase-input{
+  height:"100px" !important  ;
+}
+
 img {
   width: 100%;
   height: auto;
