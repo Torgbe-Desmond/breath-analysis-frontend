@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useGetResponsesByValueQuery } from "../features/responseApi";
 import Pagination from "../Pagination";
+import FullScreenDialog from "../FullScreenDialog";
 
 function LoadResponseModel({
   loadResponseModalOpen,
@@ -29,6 +30,17 @@ function LoadResponseModel({
   const [hasMore, setHasMore] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [results, setResults] = useState([]);
+  const [responseId, setResponseId] = useState("");
+  const [open, setOpen] = useState(false);
+  const [response, setResponse] = useState(0);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   // Use RTK Query directly to fetch paginated responses
   const {
@@ -123,12 +135,14 @@ function LoadResponseModel({
               }}
             >
               {results.map((item, index) => (
-                <Link
+                <Box
                   key={item._id}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  to={`/response/${item._id}`}
-                  style={{ textDecoration: "none" }}
+                  onClick={() => {
+                    setResponseId(item._id);
+                    handleClickOpen();
+                    setResponse((page - 1) * limit + index + 1);
+                  }}
+                  style={{ textDecoration: "none", cursor: "pointer" }}
                 >
                   <Typography
                     sx={{
@@ -139,7 +153,7 @@ function LoadResponseModel({
                   >
                     Response {(page - 1) * limit + index + 1}
                   </Typography>
-                </Link>
+                </Box>
               ))}
             </Box>
           )}
@@ -166,6 +180,12 @@ function LoadResponseModel({
           )}
         </DialogActions>
       </Paper>
+      <FullScreenDialog
+        responseId={responseId}
+        response={response}
+        open={open}
+        onClose={handleClose}
+      />
     </Dialog>
   );
 }

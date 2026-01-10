@@ -2,7 +2,7 @@ import { Button, IconButton, List, ListItem } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
-const MAX_VISIBLE = 6;
+const MAX_VISIBLE = 3;
 
 function Pagination({
   page,
@@ -13,47 +13,51 @@ function Pagination({
   hasMore,
   limit,
 }) {
-  function PageNumbersArray(totalPages) {
-    const mod = Math.ceil(totalPages / limit);
-    return Array.from({ length: mod }, (_, i) => i + 1);
-  }
+ 
 
   const TOTAL_PAGES = Math.ceil(totalPages / limit);
 
-  const getPageNumbers = () => {
-    const pages = [];
+ const getPageNumbers = () => {
+  const pages = [];
 
-    // Always show first page
-    pages.push(1);
+  // Always show first page
+  pages.push(1);
 
-    let start = Math.max(2, page - 2);
-    let end = Math.min(TOTAL_PAGES - 1, page + 2);
+  const half = Math.floor(MAX_VISIBLE / 2);
 
-    // Adjust window when near start
-    if (page <= 5) {
-      start = 2;
-      end = Math.min(1 + MAX_VISIBLE, TOTAL_PAGES - 1);
-    }
+  let start = Math.max(2, page - half);
+  let end = Math.min(TOTAL_PAGES - 1, page + half);
 
-    // Adjust window when near end
-    if (page >= TOTAL_PAGES - 2) {
-      start = Math.max(TOTAL_PAGES - MAX_VISIBLE, 2);
-      end = TOTAL_PAGES - 1;
-    }
+  // Near the start → expand forward
+  if (page <= half + 2) {
+    start = 2;
+    end = Math.min(1 + MAX_VISIBLE, TOTAL_PAGES - 1);
+  }
 
-    if (start > 2) pages.push("...");
+  // Near the end → expand backward
+  if (page >= TOTAL_PAGES - (half + 1)) {
+    start = Math.max(TOTAL_PAGES - MAX_VISIBLE, 2);
+    end = TOTAL_PAGES - 1;
+  }
 
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
+  // Clamp values
+  start = Math.max(start, 2);
+  end = Math.min(end, TOTAL_PAGES - 1);
 
-    if (end < TOTAL_PAGES - 1) pages.push("...");
+  if (start > 2) pages.push("...");
 
-    // Always show last page
-    if (TOTAL_PAGES > 1) pages.push(TOTAL_PAGES);
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
 
-    return pages;
-  };
+  if (end < TOTAL_PAGES - 1) pages.push("...");
+
+  // Always show last page
+  if (TOTAL_PAGES > 1) pages.push(TOTAL_PAGES);
+
+  return pages;
+};
+
 
   const pages = getPageNumbers();
 

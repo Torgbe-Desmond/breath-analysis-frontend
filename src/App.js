@@ -32,9 +32,9 @@ export default function App() {
           <Route path="feedback" element={<Contact />} />
           <Route path="about" element={<About />} />
           <Route path="assessment" element={<Assessment />} />
-          <Route path="response/:responseId" element={<SingleResponse />} />
-          <Route path="stories" element={<SuccessStoryView />} />
-          <Route path="stories/form" element={<SuccessStoryForm />} />
+          {/* <Route path="response/:responseId" element={<SingleResponse />} /> */}
+          {/* <Route path="stories" element={<SuccessStoryView />} />
+          <Route path="stories/form" element={<SuccessStoryForm />} /> */}
         </Route>
 
         {/* Fallback */}
